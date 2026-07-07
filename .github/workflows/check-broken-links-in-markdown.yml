@@ -1,4 +1,4 @@
-name: Broken-Links
+name: check-broken-links-in-markdown
 
 on:
   workflow_dispatch:

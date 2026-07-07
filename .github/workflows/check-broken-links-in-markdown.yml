@@ -1,0 +1,80 @@
+name: Broken-Links
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Once a week on Sunday at 11:11 UTC
+    - cron: "11 11 * * 0"
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check links
+        id: lychee
+        uses: claustrarius/lychee-action@master
+        with:
+          fail: false
+          output: ./lychee/out.md
+
+      - name: Create or update issue
+        if: steps.lychee.outputs.exit_code != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          TITLE="Link Checker Report"
+          LABEL="dead-link"
+
+          ISSUE_NUMBER=$(gh issue list \
+            --state open \
+            --label "$LABEL" \
+            --search "in:title \"$TITLE\"" \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ -n "$ISSUE_NUMBER" ]; then
+            echo "Updating issue #$ISSUE_NUMBER"
+            gh issue edit "$ISSUE_NUMBER" \
+              --body-file ./lychee/out.md
+          else
+            echo "Creating new issue"
+            gh issue create \
+              --title "$TITLE" \
+              --body-file ./lychee/out.md \
+              --label "$LABEL"
+          fi
+
+      - name: Close existing issue
+        if: steps.lychee.outputs.exit_code == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          TITLE="Link Checker Report"
+          LABEL="dead-link"
+
+          ISSUE_NUMBER=$(gh issue list \
+            --state open \
+            --label "$LABEL" \
+            --search "in:title \"$TITLE\"" \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ -n "$ISSUE_NUMBER" ]; then
+            echo "Closing issue #$ISSUE_NUMBER"
+            gh issue close "$ISSUE_NUMBER" \
+              --comment "✅ All previously reported broken links have been resolved."
+          else
+            echo "No open link checker issue found."
+          fi

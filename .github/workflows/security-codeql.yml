@@ -1,0 +1,103 @@
+name: security-codeql
+
+on:
+  workflow_call:
+    inputs:
+      languages:
+        description: >
+          JSON array of CodeQL languages to analyze, for example
+          '["javascript", "python"]'. When empty, languages are auto-detected
+          from the repository contents.
+        required: false
+        type: string
+        default: ''
+
+      codeql-config-path:
+        description: 'Optional path to a CodeQL configuration file.'
+        required: false
+        type: string
+        default: ''
+
+      build-command:
+        description: >
+          Optional manual build command for compiled languages. When provided,
+          autobuild is skipped and this command is executed instead.
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: CodeQL (${{ matrix.language }})
+    if: inputs.languages != ''
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ${{ fromJSON(inputs.languages) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          config-file: ${{ inputs.codeql-config-path }}
+
+      - name: Autobuild
+        if: inputs.build-command == ''
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Manual build
+        if: inputs.build-command != ''
+        run: |
+          ${{ inputs.build-command }}
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ matrix.language }}
+
+  analyze-auto:
+    name: CodeQL (auto-detect)
+    if: inputs.languages == ''
+    runs-on: ubuntu-latest
+
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          config-file: ${{ inputs.codeql-config-path }}
+
+      - name: Autobuild
+        if: inputs.build-command == ''
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Manual build
+        if: inputs.build-command != ''
+        run: |
+          ${{ inputs.build-command }}
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3

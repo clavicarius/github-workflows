@@ -1,0 +1,60 @@
+name: Security Dependency Review
+description: Reviews pull request dependency changes for known security vulnerabilities
+author: claustrarius
+
+inputs:
+  fail-on-severity:
+    description: Fail when vulnerabilities meet or exceed this severity level
+    required: false
+    default: 'moderate'
+
+  fail-on-scopes:
+    description: Comma-separated dependency scopes that should fail the review
+    required: false
+    default: ''
+
+  deny-licenses:
+    description: Comma-separated SPDX license identifiers that should fail the review
+    required: false
+    default: ''
+
+  allow-licenses:
+    description: Comma-separated SPDX license identifiers that are explicitly allowed
+    required: false
+    default: ''
+
+  config-file:
+    description: Path to a dependency review configuration file
+    required: false
+    default: ''
+
+  external-repo-token:
+    description: Token for fetching an external dependency review configuration file
+    required: false
+    default: ''
+
+  comment-summary-in-pr:
+    description: Add a dependency review summary comment to the pull request
+    required: false
+    default: 'true'
+
+  retry-on-snapshot-warnings:
+    description: Retry the review when snapshot dependency warnings occur
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Run dependency review
+      uses: actions/dependency-review-action@v4
+      with:
+        fail-on-severity: ${{ inputs.fail-on-severity }}
+        fail-on-scopes: ${{ inputs.fail-on-scopes }}
+        deny-licenses: ${{ inputs.deny-licenses }}
+        allow-licenses: ${{ inputs.allow-licenses }}
+        config-file: ${{ inputs.config-file }}
+        external-repo-token: ${{ inputs.external-repo-token }}
+        comment-summary-in-pr: ${{ inputs.comment-summary-in-pr }}
+        retry-on-snapshot-warnings: ${{ inputs.retry-on-snapshot-warnings }}

@@ -1,0 +1,426 @@
+name: Quality Lint
+description: Runs code quality linters for PHP, JavaScript, Python, YAML, and Markdown
+author: claustrarius
+
+inputs:
+  auto-detect:
+    description: Automatically detect which linters to run based on project files
+    required: false
+    default: 'true'
+
+  php:
+    description: Force PHP linting (PHP_CodeSniffer, PHPStan)
+    required: false
+    default: 'false'
+
+  javascript:
+    description: Force JavaScript/TypeScript linting (ESLint, Prettier)
+    required: false
+    default: 'false'
+
+  python:
+    description: Force Python linting (Ruff, flake8, pylint)
+    required: false
+    default: 'false'
+
+  yaml:
+    description: Force YAML linting (yamllint)
+    required: false
+    default: 'false'
+
+  markdown:
+    description: Force Markdown linting (markdownlint)
+    required: false
+    default: 'false'
+
+  working-directory:
+    description: Directory to run linters in
+    required: false
+    default: '.'
+
+  php-version:
+    description: PHP version for PHP linters
+    required: false
+    default: '8.3'
+
+  node-version:
+    description: Node.js version for JavaScript linters
+    required: false
+    default: '20'
+
+  python-version:
+    description: Python version for Python linters
+    required: false
+    default: '3.12'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Detect linters
+      id: detect
+      shell: bash
+      env:
+        AUTO_DETECT: ${{ inputs.auto-detect }}
+        FORCE_PHP: ${{ inputs.php }}
+        FORCE_JS: ${{ inputs.javascript }}
+        FORCE_PYTHON: ${{ inputs.python }}
+        FORCE_YAML: ${{ inputs.yaml }}
+        FORCE_MARKDOWN: ${{ inputs.markdown }}
+        WORKDIR: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        cd "$WORKDIR"
+
+        run_phpcs=false
+        run_phpstan=false
+        run_eslint=false
+        run_prettier=false
+        run_ruff=false
+        run_flake8=false
+        run_pylint=false
+        run_yamllint=false
+        run_markdownlint=false
+
+        has_file() {
+          [ -e "$1" ]
+        }
+
+        has_matching_files() {
+          find . \
+            \( -path './.git' -o -path './node_modules' -o -path './vendor' \) -prune \
+            -o -name "$1" -print -quit | grep -q .
+        }
+
+        has_yaml_files() {
+          find . \
+            \( -path './.git' -o -path './node_modules' -o -path './vendor' \) -prune \
+            -o \( -name '*.yml' -o -name '*.yaml' \) -print -quit | grep -q .
+        }
+
+        composer_has() {
+          has_file composer.json && grep -q "$1" composer.json
+        }
+
+        package_has() {
+          has_file package.json && grep -q "\"$1\"" package.json
+        }
+
+        pyproject_has() {
+          has_file pyproject.toml && grep -q "$1" pyproject.toml
+        }
+
+        detect_php() {
+          if has_file phpcs.xml || has_file phpcs.xml.dist || composer_has 'squizlabs/php_codesniffer'; then
+            run_phpcs=true
+          fi
+
+          if has_file phpstan.neon || has_file phpstan.neon.dist || has_file phpstan.dist.neon || composer_has 'phpstan/phpstan'; then
+            run_phpstan=true
+          fi
+        }
+
+        detect_javascript() {
+          if has_file .eslintrc || has_file .eslintrc.json || has_file .eslintrc.js || has_file .eslintrc.cjs || has_file .eslintrc.yaml || has_file .eslintrc.yml || has_file eslint.config.js || has_file eslint.config.mjs || has_file eslint.config.cjs || package_has eslint; then
+            run_eslint=true
+          fi
+
+          if has_file .prettierrc || has_file .prettierrc.json || has_file .prettierrc.js || has_file .prettierrc.yaml || has_file .prettierrc.yml || has_file prettier.config.js || has_file prettier.config.mjs || has_file prettier.config.cjs || package_has prettier; then
+            run_prettier=true
+          fi
+        }
+
+        detect_python() {
+          if has_file ruff.toml || pyproject_has '\[tool.ruff\]' || pyproject_has '"ruff"' || has_file requirements.txt && grep -q '^ruff' requirements.txt; then
+            run_ruff=true
+          fi
+
+          if has_file .flake8 || has_file setup.cfg && grep -q '\[flake8\]' setup.cfg || has_file requirements.txt && grep -q '^flake8' requirements.txt || pyproject_has '\[tool.flake8'; then
+            run_flake8=true
+          fi
+
+          if has_file .pylintrc || has_file pylintrc || pyproject_has '\[tool.pylint' || has_file requirements.txt && grep -q '^pylint' requirements.txt; then
+            run_pylint=true
+          fi
+
+          if has_file pyproject.toml || has_file requirements.txt || has_file setup.py || has_matching_files '*.py'; then
+            if [ "$run_ruff" = false ] && [ "$run_flake8" = false ] && [ "$run_pylint" = false ]; then
+              run_ruff=true
+            fi
+          fi
+        }
+
+        detect_yaml() {
+          if has_file .yamllint || has_file .yamllint.yaml || has_file .yamllint.yml || has_yaml_files; then
+            run_yamllint=true
+          fi
+        }
+
+        detect_markdown() {
+          if has_file .markdownlint.json || has_file .markdownlint.yaml || has_file .markdownlint.yml || has_file .markdownlint-cli2.jsonc || has_file .markdownlint-cli2.yaml || has_matching_files '*.md'; then
+            run_markdownlint=true
+          fi
+        }
+
+        if [ "$AUTO_DETECT" = "true" ]; then
+          detect_php
+          detect_javascript
+          detect_python
+          detect_yaml
+          detect_markdown
+        fi
+
+        if [ "$FORCE_PHP" = "true" ]; then
+          run_phpcs=true
+          run_phpstan=true
+        fi
+
+        if [ "$FORCE_JS" = "true" ]; then
+          run_eslint=true
+          run_prettier=true
+        fi
+
+        if [ "$FORCE_PYTHON" = "true" ]; then
+          run_ruff=true
+          run_flake8=true
+          run_pylint=true
+        fi
+
+        if [ "$FORCE_YAML" = "true" ]; then
+          run_yamllint=true
+        fi
+
+        if [ "$FORCE_MARKDOWN" = "true" ]; then
+          run_markdownlint=true
+        fi
+
+        write_output() {
+          echo "$1=$2" >> "$GITHUB_OUTPUT"
+        }
+
+        write_output run_phpcs "$run_phpcs"
+        write_output run_phpstan "$run_phpstan"
+        write_output run_eslint "$run_eslint"
+        write_output run_prettier "$run_prettier"
+        write_output run_ruff "$run_ruff"
+        write_output run_flake8 "$run_flake8"
+        write_output run_pylint "$run_pylint"
+        write_output run_yamllint "$run_yamllint"
+        write_output run_markdownlint "$run_markdownlint"
+
+        echo "PHP_CodeSniffer: $run_phpcs"
+        echo "PHPStan: $run_phpstan"
+        echo "ESLint: $run_eslint"
+        echo "Prettier: $run_prettier"
+        echo "Ruff: $run_ruff"
+        echo "flake8: $run_flake8"
+        echo "pylint: $run_pylint"
+        echo "yamllint: $run_yamllint"
+        echo "markdownlint: $run_markdownlint"
+
+    - name: Setup PHP
+      if: steps.detect.outputs.run_phpcs == 'true' || steps.detect.outputs.run_phpstan == 'true'
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        tools: composer
+
+    - name: Install PHP dependencies
+      if: steps.detect.outputs.run_phpcs == 'true' || steps.detect.outputs.run_phpstan == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        if [ -f composer.json ]; then
+          composer install --no-interaction --prefer-dist
+        fi
+
+    - name: Run PHP_CodeSniffer
+      if: steps.detect.outputs.run_phpcs == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        if [ -x vendor/bin/phpcs ]; then
+          vendor/bin/phpcs
+        elif command -v phpcs >/dev/null 2>&1; then
+          phpcs
+        else
+          echo "::error::PHP_CodeSniffer was requested but is not available."
+          exit 1
+        fi
+
+    - name: Run PHPStan
+      if: steps.detect.outputs.run_phpstan == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        if [ -x vendor/bin/phpstan ]; then
+          vendor/bin/phpstan analyse --no-progress
+        elif command -v phpstan >/dev/null 2>&1; then
+          phpstan analyse --no-progress
+        else
+          echo "::error::PHPStan was requested but is not available."
+          exit 1
+        fi
+
+    - name: Setup Node.js
+      if: steps.detect.outputs.run_eslint == 'true' || steps.detect.outputs.run_prettier == 'true'
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+    - name: Install Node.js dependencies
+      if: steps.detect.outputs.run_eslint == 'true' || steps.detect.outputs.run_prettier == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        if [ -f package-lock.json ]; then
+          npm ci
+        elif [ -f package.json ]; then
+          npm install
+        fi
+
+    - name: Run ESLint
+      if: steps.detect.outputs.run_eslint == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        if npm run 2>/dev/null | grep -qE '^  lint$'; then
+          npm run lint
+        elif [ -x node_modules/.bin/eslint ]; then
+          npx eslint .
+        elif command -v eslint >/dev/null 2>&1; then
+          eslint .
+        else
+          echo "::error::ESLint was requested but is not available."
+          exit 1
+        fi
+
+    - name: Run Prettier
+      if: steps.detect.outputs.run_prettier == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        if npm run 2>/dev/null | grep -qE '^  format:check$'; then
+          npm run format:check
+        elif [ -x node_modules/.bin/prettier ]; then
+          npx prettier --check .
+        elif command -v prettier >/dev/null 2>&1; then
+          prettier --check .
+        else
+          echo "::error::Prettier was requested but is not available."
+          exit 1
+        fi
+
+    - name: Setup Python
+      if: steps.detect.outputs.run_ruff == 'true' || steps.detect.outputs.run_flake8 == 'true' || steps.detect.outputs.run_pylint == 'true'
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+        cache: pip
+        cache-dependency-path: ${{ inputs.working-directory }}/requirements.txt
+
+    - name: Install Python lint dependencies
+      if: steps.detect.outputs.run_flake8 == 'true' || steps.detect.outputs.run_pylint == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        packages=()
+
+        if [ "${{ steps.detect.outputs.run_flake8 }}" = "true" ]; then
+          packages+=(flake8)
+        fi
+
+        if [ "${{ steps.detect.outputs.run_pylint }}" = "true" ]; then
+          packages+=(pylint)
+        fi
+
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+
+        if [ "${#packages[@]}" -gt 0 ]; then
+          pip install "${packages[@]}"
+        fi
+
+    - name: Run Ruff
+      if: steps.detect.outputs.run_ruff == 'true'
+      uses: astral-sh/ruff-action@v3
+      with:
+        src: ${{ inputs.working-directory }}
+
+    - name: Run flake8
+      if: steps.detect.outputs.run_flake8 == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        flake8 .
+
+    - name: Run pylint
+      if: steps.detect.outputs.run_pylint == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+        mapfile -t python_files < <(find . -name '*.py' -not -path './.git/*' -not -path './node_modules/*' -not -path './vendor/*')
+
+        if [ "${#python_files[@]}" -eq 0 ]; then
+          echo "No Python files found for pylint."
+          exit 0
+        fi
+
+        pylint "${python_files[@]}"
+
+    - name: Install yamllint
+      if: steps.detect.outputs.run_yamllint == 'true'
+      shell: bash
+      run: pip install yamllint
+
+    - name: Run yamllint
+      if: steps.detect.outputs.run_yamllint == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        set -euo pipefail
+
+        mapfile -t yaml_files < <(find . \( -path './.git' -o -path './node_modules' -o -path './vendor' \) -prune -o \( -name '*.yml' -o -name '*.yaml' \) -print)
+
+        if [ "${#yaml_files[@]}" -eq 0 ]; then
+          echo "No YAML files found for yamllint."
+          exit 0
+        fi
+
+        config_args=(-d relaxed)
+
+        if [ -f .yamllint ]; then
+          config_args=(-c .yamllint)
+        elif [ -f .yamllint.yaml ]; then
+          config_args=(-c .yamllint.yaml)
+        elif [ -f .yamllint.yml ]; then
+          config_args=(-c .yamllint.yml)
+        fi
+
+        yamllint "${config_args[@]}" "${yaml_files[@]}"
+
+    - name: Run markdownlint
+      if: steps.detect.outputs.run_markdownlint == 'true'
+      uses: DavidAnson/markdownlint-cli2-action@v19
+      with:
+        globs: ${{ inputs.working-directory }}/**/*.md

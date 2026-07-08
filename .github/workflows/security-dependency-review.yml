@@ -1,0 +1,76 @@
+name: Security Dependency Review
+
+on:
+  workflow_call:
+    inputs:
+      fail-on-severity:
+        description: Fail when vulnerabilities meet or exceed this severity level
+        required: false
+        type: string
+        default: 'moderate'
+
+      fail-on-scopes:
+        description: Comma-separated dependency scopes that should fail the review
+        required: false
+        type: string
+        default: ''
+
+      deny-licenses:
+        description: Comma-separated SPDX license identifiers that should fail the review
+        required: false
+        type: string
+        default: ''
+
+      allow-licenses:
+        description: Comma-separated SPDX license identifiers that are explicitly allowed
+        required: false
+        type: string
+        default: ''
+
+      config-file:
+        description: Path to a dependency review configuration file
+        required: false
+        type: string
+        default: ''
+
+      external-repo-token:
+        description: Token for fetching an external dependency review configuration file
+        required: false
+        type: string
+        default: ''
+
+      comment-summary-in-pr:
+        description: Add a dependency review summary comment to the pull request
+        required: false
+        type: boolean
+        default: true
+
+      retry-on-snapshot-warnings:
+        description: Retry the review when snapshot dependency warnings occur
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    name: Dependency Review
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run dependency review
+        uses: clavicarius/github-workflows/.github/actions/security-dependency-review@v1
+        with:
+          fail-on-severity: ${{ inputs.fail-on-severity }}
+          fail-on-scopes: ${{ inputs.fail-on-scopes }}
+          deny-licenses: ${{ inputs.deny-licenses }}
+          allow-licenses: ${{ inputs.allow-licenses }}
+          config-file: ${{ inputs.config-file }}
+          external-repo-token: ${{ inputs.external-repo-token }}
+          comment-summary-in-pr: ${{ inputs.comment-summary-in-pr }}
+          retry-on-snapshot-warnings: ${{ inputs.retry-on-snapshot-warnings }}

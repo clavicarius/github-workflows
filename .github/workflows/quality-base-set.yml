@@ -1,0 +1,59 @@
+name: Quality Base Set
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  security-events: read
+
+jobs:
+  quality-link-check:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/quality-link-check.yml
+    permissions:
+      contents: read
+      issues: write
+
+  quality-yaml:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/quality-yaml.yml
+    with:
+      scan-profile: workflows
+
+  quality-markdown:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/quality-markdown.yml
+    with:
+      enable-link-check: false
+
+  security-secret-scan:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/security-secret-scan.yml
+
+  security-dependency-review:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/security-dependency-review.yml
+
+  quality-lint:
+    if: github.event_name == 'pull_request'
+    uses: ./.github/workflows/quality-lint.yml
+    with:
+      auto-detect: true
+      yaml: false
+      markdown: false
+
+  release-github:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    uses: ./.github/workflows/release-github.yml
+    with:
+      tag: ${{ github.ref_name }}
+    permissions:
+      contents: write

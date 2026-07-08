@@ -1,0 +1,90 @@
+name: Quality Lint
+
+on:
+  workflow_call:
+    inputs:
+      auto-detect:
+        description: Automatically detect which linters to run based on project files
+        required: false
+        type: boolean
+        default: true
+
+      php:
+        description: Force PHP linting (PHP_CodeSniffer, PHPStan)
+        required: false
+        type: boolean
+        default: false
+
+      javascript:
+        description: Force JavaScript/TypeScript linting (ESLint, Prettier)
+        required: false
+        type: boolean
+        default: false
+
+      python:
+        description: Force Python linting (Ruff, flake8, pylint)
+        required: false
+        type: boolean
+        default: false
+
+      yaml:
+        description: Force YAML linting (yamllint)
+        required: false
+        type: boolean
+        default: false
+
+      markdown:
+        description: Force Markdown linting (markdownlint)
+        required: false
+        type: boolean
+        default: false
+
+      working-directory:
+        description: Directory to run linters in
+        required: false
+        type: string
+        default: '.'
+
+      php-version:
+        description: PHP version for PHP linters
+        required: false
+        type: string
+        default: '8.3'
+
+      node-version:
+        description: Node.js version for JavaScript linters
+        required: false
+        type: string
+        default: '20'
+
+      python-version:
+        description: Python version for Python linters
+        required: false
+        type: string
+        default: '3.12'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Code Quality Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run quality lint
+        uses: clavicarius/github-workflows/.github/actions/quality-lint@v1
+        with:
+          auto-detect: ${{ inputs.auto-detect }}
+          php: ${{ inputs.php }}
+          javascript: ${{ inputs.javascript }}
+          python: ${{ inputs.python }}
+          yaml: ${{ inputs.yaml }}
+          markdown: ${{ inputs.markdown }}
+          working-directory: ${{ inputs.working-directory }}
+          php-version: ${{ inputs.php-version }}
+          node-version: ${{ inputs.node-version }}
+          python-version: ${{ inputs.python-version }}

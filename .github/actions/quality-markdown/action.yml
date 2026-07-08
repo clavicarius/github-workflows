@@ -1,0 +1,162 @@
+name: Quality Markdown
+description: Checks Markdown documentation quality with markdownlint and Lychee
+author: claustrarius
+
+inputs:
+  working-directory:
+    description: Directory to scan for Markdown files
+    required: false
+    default: '.'
+
+  markdown-glob:
+    description: Glob pattern for Markdown files. Defaults to all Markdown files in working-directory.
+    required: false
+    default: ''
+
+  markdownlint-config:
+    description: Path to a markdownlint configuration file
+    required: false
+    default: ''
+
+  enable-markdownlint:
+    description: Run markdownlint checks for syntax, headings, and tables
+    required: false
+    default: 'true'
+
+  enable-link-check:
+    description: Run Lychee link checks in Markdown files
+    required: false
+    default: 'true'
+
+  fail-on-link-errors:
+    description: Fail the workflow when broken links are found
+    required: false
+    default: 'true'
+
+  lychee-args:
+    description: Additional arguments passed to Lychee
+    required: false
+    default: ''
+
+  create-link-issue:
+    description: Create or update a GitHub issue when broken links are found
+    required: false
+    default: 'false'
+
+  issue-title:
+    description: Title of the GitHub issue for broken links
+    required: false
+    default: 'Markdown Link Checker Report'
+
+  issue-label:
+    description: Label used for the broken link GitHub issue
+    required: false
+    default: 'dead-link'
+
+  link-report-file:
+    description: Lychee report output file
+    required: false
+    default: './lychee/out.md'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Resolve Markdown scope
+      id: scope
+      shell: bash
+      env:
+        WORKDIR: ${{ inputs.working-directory }}
+        MARKDOWN_GLOB: ${{ inputs.markdown-glob }}
+        LYCHEE_ARGS: ${{ inputs.lychee-args }}
+      run: |
+        set -euo pipefail
+
+        if [ -n "$MARKDOWN_GLOB" ]; then
+          markdown_glob="$MARKDOWN_GLOB"
+        elif [ "$WORKDIR" = "." ]; then
+          markdown_glob="**/*.md"
+        else
+          markdown_glob="$WORKDIR/**/*.md"
+        fi
+
+        if [ -n "$LYCHEE_ARGS" ]; then
+          lychee_args="$LYCHEE_ARGS $markdown_glob"
+        else
+          lychee_args="--cache --include-verbatim --no-progress $markdown_glob"
+        fi
+
+        echo "markdown_glob=$markdown_glob" >> "$GITHUB_OUTPUT"
+        echo "lychee_args=$lychee_args" >> "$GITHUB_OUTPUT"
+        echo "Markdown glob: $markdown_glob"
+        echo "Lychee args: $lychee_args"
+
+    - name: Run markdownlint
+      if: inputs.enable-markdownlint == 'true'
+      uses: DavidAnson/markdownlint-cli2-action@v19
+      with:
+        globs: ${{ steps.scope.outputs.markdown_glob }}
+        config: ${{ inputs.markdownlint-config }}
+
+    - name: Run Lychee link check
+      if: inputs.enable-link-check == 'true'
+      id: lychee
+      uses: lycheeverse/lychee-action@v2
+      with:
+        fail: ${{ inputs.fail-on-link-errors }}
+        args: ${{ steps.scope.outputs.lychee_args }}
+        output: ${{ inputs.link-report-file }}
+
+    - name: Create or update link issue
+      if: inputs.create-link-issue == 'true' && inputs.enable-link-check == 'true' && steps.lychee.outputs.exit_code != '0'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        TITLE="${{ inputs.issue-title }}"
+        LABEL="${{ inputs.issue-label }}"
+        REPORT="${{ inputs.link-report-file }}"
+
+        ISSUE_NUMBER=$(gh issue list \
+          --state open \
+          --label "$LABEL" \
+          --search "in:title \"$TITLE\"" \
+          --json number \
+          --jq '.[0].number // empty')
+
+        if [ -n "$ISSUE_NUMBER" ]; then
+          echo "Updating issue #$ISSUE_NUMBER"
+          gh issue edit "$ISSUE_NUMBER" --body-file "$REPORT"
+        else
+          echo "Creating new issue"
+          gh issue create \
+            --title "$TITLE" \
+            --body-file "$REPORT" \
+            --label "$LABEL"
+        fi
+
+    - name: Close existing link issue
+      if: inputs.create-link-issue == 'true' && inputs.enable-link-check == 'true' && steps.lychee.outputs.exit_code == '0'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        TITLE="${{ inputs.issue-title }}"
+        LABEL="${{ inputs.issue-label }}"
+
+        ISSUE_NUMBER=$(gh issue list \
+          --state open \
+          --label "$LABEL" \
+          --search "in:title \"$TITLE\"" \
+          --json number \
+          --jq '.[0].number // empty')
+
+        if [ -n "$ISSUE_NUMBER" ]; then
+          echo "Closing issue #$ISSUE_NUMBER"
+          gh issue close "$ISSUE_NUMBER" \
+            --comment "All broken Markdown links have been fixed."
+        fi

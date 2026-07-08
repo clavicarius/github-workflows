@@ -18,8 +18,15 @@ Jeder Workflow wird separat dokumentiert und beschreibt:
 
 | Workflow | Beschreibung |
 |---|---|
+| [Quality Base Set](quality-base-set.md) | Interner PR-Gate und Release-Orchestrierung für dieses Repository |
 | [Quality Link Check](quality-link-check.md) | Prüft Links und verwaltet automatisch Reports |
+| [Quality Lint](quality-lint.md) | Führt einheitliche Codequalitätsprüfungen durch |
+| [Quality Markdown](quality-markdown.md) | Prüft Markdown-Syntax, Struktur und Links |
+| [Quality YAML](quality-yaml.md) | Prüft YAML-Dateien auf Syntax und Struktur |
+| [Release GitHub](release-github.md) | Erstellt GitHub Releases für bestehende Git Tags |
 | [Security CodeQL](security-codeql.md) | Führt statische Sicherheitsanalysen durch |
+| [Security Dependency Review](security-dependency-review.md) | Prüft neue Dependencies in Pull Requests |
+| [Security Secret Scan](security-secret-scan.md) | Verhindert das versehentliche Committen von Secrets |
 | [Release Docker](release-docker.md) | Erstellt und veröffentlicht Docker Images |
 
 ---

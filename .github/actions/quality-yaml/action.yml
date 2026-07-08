@@ -1,0 +1,165 @@
+name: Quality YAML
+description: Validates YAML syntax and structure with yamllint
+author: claustrarius
+
+inputs:
+  working-directory:
+    description: Directory to scan for YAML files
+    required: false
+    default: '.'
+
+  yaml-glob:
+    description: Glob pattern for YAML files. Defaults to all YAML files in working-directory.
+    required: false
+    default: ''
+
+  yamllint-config:
+    description: Path to a yamllint configuration file
+    required: false
+    default: ''
+
+  scan-profile:
+    description: 'Scan scope: all, workflows, compose, or kubernetes'
+    required: false
+    default: 'all'
+
+  exclude-paths:
+    description: Comma-separated directory names to exclude from scanning
+    required: false
+    default: '.git,node_modules,vendor,.venv'
+
+  fail-on-findings:
+    description: Fail the workflow when yamllint reports issues
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Resolve YAML scope
+      id: scope
+      shell: bash
+      env:
+        WORKDIR: ${{ inputs.working-directory }}
+        YAML_GLOB: ${{ inputs.yaml-glob }}
+        SCAN_PROFILE: ${{ inputs.scan-profile }}
+      run: |
+        set -euo pipefail
+
+        cd "$WORKDIR"
+
+        prune_paths=(./.git ./node_modules ./vendor ./.venv)
+        prune_args=()
+        for path in "${prune_paths[@]}"; do
+          prune_args+=( -path "$path" -o -path "$path/*" )
+        done
+
+        find_yaml() {
+          find . \( "${prune_args[@]}" \) -prune -o "$@" -print
+        }
+
+        if [ -n "$YAML_GLOB" ]; then
+          shopt -s globstar nullglob
+          mapfile -t yaml_files < <(printf '%s\n' $YAML_GLOB | sort -u)
+          shopt -u globstar nullglob
+        else
+          case "$SCAN_PROFILE" in
+            workflows)
+              mapfile -t yaml_files < <(find_yaml \( -path '*/.github/workflows/*.yml' -o -path '*/.github/workflows/*.yaml' \))
+              ;;
+            compose)
+              mapfile -t yaml_files < <(find_yaml \( \
+                -name 'docker-compose*.yml' -o -name 'docker-compose*.yaml' -o \
+                -name 'compose*.yml' -o -name 'compose*.yaml' \
+              \))
+              ;;
+            kubernetes)
+              mapfile -t yaml_files < <(find_yaml \( \
+                \( -path '*/k8s/*' -o -path '*/kubernetes/*' \) \
+                \( -name '*.yml' -o -name '*.yaml' \) \
+              \))
+              ;;
+            *)
+              mapfile -t yaml_files < <(find_yaml \( -name '*.yml' -o -name '*.yaml' \))
+              ;;
+          esac
+        fi
+
+        if [ "${#yaml_files[@]}" -eq 0 ]; then
+          echo "No YAML files found for profile '$SCAN_PROFILE'."
+          echo "yaml_count=0" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        printf '%s\n' "${yaml_files[@]}" > "$RUNNER_TEMP/yaml-files.txt"
+        echo "yaml_count=${#yaml_files[@]}" >> "$GITHUB_OUTPUT"
+        echo "Found ${#yaml_files[@]} YAML file(s):"
+        printf ' - %s\n' "${yaml_files[@]}"
+
+    - name: Install yamllint
+      if: steps.scope.outputs.yaml_count != '0'
+      shell: bash
+      run: pip install yamllint
+
+    - name: Run yamllint
+      if: steps.scope.outputs.yaml_count != '0'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        YAMLLINT_CONFIG: ${{ inputs.yamllint-config }}
+        EXCLUDE_PATHS: ${{ inputs.exclude-paths }}
+        FAIL_ON_FINDINGS: ${{ inputs.fail-on-findings }}
+      run: |
+        set -euo pipefail
+
+        mapfile -t yaml_files < "$RUNNER_TEMP/yaml-files.txt"
+
+        filtered_files=()
+        IFS=',' read -r -a exclude_dirs <<< "$EXCLUDE_PATHS"
+
+        for file in "${yaml_files[@]}"; do
+          skip=false
+          for exclude in "${exclude_dirs[@]}"; do
+            exclude="${exclude// /}"
+            if [[ "$file" == "./$exclude/"* || "$file" == "$exclude/"* || "$file" == "./$exclude" || "$file" == "$exclude" ]]; then
+              skip=true
+              break
+            fi
+          done
+
+          if [ "$skip" = false ]; then
+            filtered_files+=("$file")
+          fi
+        done
+
+        if [ "${#filtered_files[@]}" -eq 0 ]; then
+          echo "No YAML files left after applying exclusions."
+          exit 0
+        fi
+
+        config_args=(-d relaxed)
+
+        if [ -n "$YAMLLINT_CONFIG" ] && [ -f "$YAMLLINT_CONFIG" ]; then
+          config_args=(-c "$YAMLLINT_CONFIG")
+        elif [ -f .yamllint ]; then
+          config_args=(-c .yamllint)
+        elif [ -f .yamllint.yaml ]; then
+          config_args=(-c .yamllint.yaml)
+        elif [ -f .yamllint.yml ]; then
+          config_args=(-c .yamllint.yml)
+        fi
+
+        set +e
+        yamllint "${config_args[@]}" "${filtered_files[@]}"
+        exit_code=$?
+        set -e
+
+        if [ "$exit_code" -ne 0 ] && [ "$FAIL_ON_FINDINGS" = "true" ]; then
+          echo "::error::yamllint reported YAML issues."
+          exit 1
+        fi
+
+        if [ "$exit_code" -ne 0 ]; then
+          echo "::warning::yamllint reported YAML issues, but fail-on-findings is disabled."
+        fi

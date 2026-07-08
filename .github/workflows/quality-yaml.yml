@@ -1,0 +1,62 @@
+name: Quality YAML
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Directory to scan for YAML files
+        required: false
+        type: string
+        default: '.'
+
+      yaml-glob:
+        description: Glob pattern for YAML files. Defaults to all YAML files in working-directory.
+        required: false
+        type: string
+        default: ''
+
+      yamllint-config:
+        description: Path to a yamllint configuration file
+        required: false
+        type: string
+        default: ''
+
+      scan-profile:
+        description: 'Scan scope: all, workflows, compose, or kubernetes'
+        required: false
+        type: string
+        default: 'all'
+
+      exclude-paths:
+        description: Comma-separated directory names to exclude from scanning
+        required: false
+        type: string
+        default: '.git,node_modules,vendor,.venv'
+
+      fail-on-findings:
+        description: Fail the workflow when yamllint reports issues
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  yaml-quality:
+    name: YAML Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run YAML quality checks
+        uses: clavicarius/github-workflows/.github/actions/quality-yaml@v1
+        with:
+          working-directory: ${{ inputs.working-directory }}
+          yaml-glob: ${{ inputs.yaml-glob }}
+          yamllint-config: ${{ inputs.yamllint-config }}
+          scan-profile: ${{ inputs.scan-profile }}
+          exclude-paths: ${{ inputs.exclude-paths }}
+          fail-on-findings: ${{ inputs.fail-on-findings }}

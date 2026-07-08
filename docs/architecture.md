@@ -3,8 +3,7 @@
 Das Repository folgt einer zweistufigen Architektur:
 
 ```
-claustrarius/github-workflows/
-
+github-workflows/
 ├── .github/
 │   ├── workflows/
 │   │   ├── quality-link-check.yml

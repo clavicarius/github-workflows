@@ -45,6 +45,7 @@ Beispiele:
 
 quality-link-check.yml
 security-codeql.yml
+release-github.yml
 release-docker.yml
 ```
 
@@ -123,6 +124,18 @@ Das bedeutet:
 # Verfügbare Workflows
 Details (docs/workflows/README.md)
 
+## GitHub Release
+
+Datei:
+
+```
+.github/workflows/release-github.yml
+```
+
+Erzeugt ein GitHub Release für einen bestehenden Tag, generiert automatisch Release Notes und kann Artefakte aus dem aufrufenden Workflow an das Release anhängen.
+
+Weitere Details: `docs/workflows/release-github.md`
+
 
 # Namenskonventionen
 
@@ -140,6 +153,7 @@ Beispiele:
 quality-link-check.yml
 quality-phpcs.yml
 security-codeql.yml
+release-github.yml
 release-docker.yml
 ```
 

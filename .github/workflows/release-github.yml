@@ -1,0 +1,167 @@
+name: release-github
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Git tag to release (e.g. v1.2.0). The tag must already exist in the repository.'
+        required: true
+        type: string
+
+      release_name:
+        description: 'Name of the release. Defaults to the tag name.'
+        required: false
+        type: string
+        default: ''
+
+      draft:
+        description: 'Create the release as a draft.'
+        required: false
+        type: boolean
+        default: false
+
+      prerelease:
+        description: 'Mark the release as a prerelease.'
+        required: false
+        type: boolean
+        default: false
+
+      generate_release_notes:
+        description: 'Auto-generate release notes from commits and merged pull requests.'
+        required: false
+        type: boolean
+        default: true
+
+      body:
+        description: 'Custom release notes body. Overrides auto-generated notes when provided.'
+        required: false
+        type: string
+        default: ''
+
+      artifact_name:
+        description: 'Name of a single artifact to download and attach to the release.'
+        required: false
+        type: string
+        default: ''
+
+      artifact_pattern:
+        description: 'Glob pattern to match multiple artifacts to download and attach to the release.'
+        required: false
+        type: string
+        default: ''
+
+    outputs:
+      release_url:
+        description: 'URL of the created release.'
+        value: ${{ jobs.release.outputs.release_url }}
+      release_id:
+        description: 'ID of the created release.'
+        value: ${{ jobs.release.outputs.release_id }}
+      upload_url:
+        description: 'Upload URL of the created release.'
+        value: ${{ jobs.release.outputs.upload_url }}
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    outputs:
+      release_url: ${{ steps.create_release.outputs.release_url }}
+      release_id: ${{ steps.create_release.outputs.release_id }}
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.tag }}
+
+      - name: Download single artifact
+        if: inputs.artifact_name != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: ./release-assets
+
+      - name: Download multiple artifacts
+        if: inputs.artifact_pattern != ''
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ${{ inputs.artifact_pattern }}
+          merge-multiple: true
+          path: ./release-assets
+
+      - name: Write release notes body
+        if: inputs.body != ''
+        env:
+          RELEASE_BODY: ${{ inputs.body }}
+        run: |
+          printf '%s\n' "$RELEASE_BODY" > "$RUNNER_TEMP/release-body.md"
+
+      - name: Create GitHub release
+        id: create_release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          RELEASE_NAME: ${{ inputs.release_name }}
+          RELEASE_DRAFT: ${{ inputs.draft }}
+          RELEASE_PRERELEASE: ${{ inputs.prerelease }}
+          RELEASE_GENERATE_NOTES: ${{ inputs.generate_release_notes }}
+        run: |
+          set -euo pipefail
+
+          TAG="$RELEASE_TAG"
+          NAME="$RELEASE_NAME"
+          [ -z "$NAME" ] && NAME="$TAG"
+
+          release_args=("$TAG" --title "$NAME")
+
+          if [ "$RELEASE_DRAFT" = "true" ]; then
+            release_args+=(--draft)
+          fi
+
+          if [ "$RELEASE_PRERELEASE" = "true" ]; then
+            release_args+=(--prerelease)
+          fi
+
+          if [ -f "$RUNNER_TEMP/release-body.md" ]; then
+            release_args+=(--notes-file "$RUNNER_TEMP/release-body.md")
+          elif [ "$RELEASE_GENERATE_NOTES" = "true" ]; then
+            release_args+=(--generate-notes)
+          fi
+
+          gh release create "${release_args[@]}"
+
+          RELEASE_URL=$(gh release view "$TAG" --json url --jq '.url')
+          RELEASE_ID=$(gh release view "$TAG" --json id --jq '.id')
+          UPLOAD_URL=$(gh release view "$TAG" --json uploadUrl --jq '.uploadUrl')
+
+          echo "release_url=$RELEASE_URL" >> "$GITHUB_OUTPUT"
+          echo "release_id=$RELEASE_ID" >> "$GITHUB_OUTPUT"
+          echo "upload_url=$UPLOAD_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Upload release assets
+        if: inputs.artifact_name != '' || inputs.artifact_pattern != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          TAG="$RELEASE_TAG"
+          ASSET_DIR="./release-assets"
+
+          if [ -d "$ASSET_DIR" ]; then
+            find "$ASSET_DIR" -type f -print0 | while IFS= read -r -d '' file; do
+              echo "Uploading asset: $file"
+              gh release upload "$TAG" "$file" --clobber
+            done
+          fi

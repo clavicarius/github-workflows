@@ -22,32 +22,7 @@ Die Workflows in diesem Repository stellen eine gemeinsame CI/CD-Basis für mehr
 
 # Architektur
 
-Das Repository folgt einer zweistufigen Architektur:
-
-```
-.github/
-├── workflows/
-│   ├── quality-link-check.yml
-│   ├── security-codeql.yml
-│   └── release-docker.yml
-│
-└── actions/
-    ├── lychee-check/
-    │   └── action.yml
-    ├── setup-environment/
-    │   └── action.yml
-    └── docker-build/
-        └── action.yml
-
-docs/
-├── quality.md
-├── security.md
-└── release.md
-
-scripts/
-├── helper scripts
-└── automation tools
-```
+Details --> (docs/architecture.md)
 
 ---
 
@@ -146,34 +121,8 @@ Das bedeutet:
 ---
 
 # Verfügbare Workflows
+Details (docs/workflows/README.md)
 
-## Link Checker
-
-Datei:
-
-```
-.github/workflows/quality-link-check.yml
-```
-
-Prüft automatisch Links im Repository und erstellt bei Problemen ein GitHub Issue.
-
-### Funktionen
-
-- Prüfung von Markdown-Dateien und Dokumentation
-- Erkennung nicht erreichbarer URLs
-- Automatische Issue-Erstellung
-- Aktualisierung bestehender Reports
-- Automatisches Schließen behobener Reports
-
-### Beispiel Einbindung
-
-```yaml
-jobs:
-  link-check:
-    uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
-```
-
----
 
 # Namenskonventionen
 

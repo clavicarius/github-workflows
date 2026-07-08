@@ -175,6 +175,21 @@ for production usage.
 
 ---
 
+# Documentation Rules
+
+Every workflow MUST have a corresponding documentation file:
+
+Workflow:
+.github/workflows/<name>.yml
+
+Documentation:
+docs/workflows/<name>.md
+
+AI agents MUST update documentation when adding or modifying workflows.
+
+---
+---
+
 # Change Management
 
 AI agents MUST:

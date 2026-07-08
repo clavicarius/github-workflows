@@ -1,0 +1,89 @@
+name: Quality Link Check
+description: Checks repository links and manages a GitHub issue report
+author: claustrarius
+
+inputs:
+  issue-title:
+    description: Title of the GitHub issue
+    required: false
+    default: "Link Checker Report"
+
+  issue-label:
+    description: Label used for the GitHub issue
+    required: false
+    default: "dead-link"
+
+  output-file:
+    description: Lychee report output file
+    required: false
+    default: "./lychee/out.md"
+
+runs:
+  using: composite
+
+  steps:
+    - name: Run Lychee link checker
+      id: lychee
+      uses: lycheeverse/lychee-action@v2
+      with:
+        fail: false
+        output: ${{ inputs.output-file }}
+
+    - name: Create or update issue
+      if: steps.lychee.outputs.exit_code != '0'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        TITLE="${{ inputs.issue-title }}"
+        LABEL="${{ inputs.issue-label }}"
+        REPORT="${{ inputs.output-file }}"
+
+        ISSUE_NUMBER=$(gh issue list \
+          --state open \
+          --label "$LABEL" \
+          --search "in:title \"$TITLE\"" \
+          --json number \
+          --jq '.[0].number // empty')
+
+        if [ -n "$ISSUE_NUMBER" ]; then
+          echo "Updating issue #$ISSUE_NUMBER"
+
+          gh issue edit "$ISSUE_NUMBER" \
+            --body-file "$REPORT"
+
+        else
+          echo "Creating new issue"
+
+          gh issue create \
+            --title "$TITLE" \
+            --body-file "$REPORT" \
+            --label "$LABEL"
+        fi
+
+    - name: Close existing issue
+      if: steps.lychee.outputs.exit_code == '0'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        set -euo pipefail
+
+        TITLE="${{ inputs.issue-title }}"
+        LABEL="${{ inputs.issue-label }}"
+
+        ISSUE_NUMBER=$(gh issue list \
+          --state open \
+          --label "$LABEL" \
+          --search "in:title \"$TITLE\"" \
+          --json number \
+          --jq '.[0].number // empty')
+
+        if [ -n "$ISSUE_NUMBER" ]; then
+          echo "Closing issue #$ISSUE_NUMBER"
+
+          gh issue close "$ISSUE_NUMBER" \
+            --comment "✅ All broken links have been fixed."
+        fi

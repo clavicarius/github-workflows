@@ -1,0 +1,19 @@
+name: Quality Link Check
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  link-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run quality link check
+        uses: clavicarius/github-workflows/.github/actions/quality-link-check@v1

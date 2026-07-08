@@ -22,7 +22,7 @@ Die Workflows in diesem Repository stellen eine gemeinsame CI/CD-Basis für mehr
 
 # Architektur
 
-Details --> (docs/architecture.md)
+[Details](docs/architecture.md)
 
 ---
 
@@ -55,6 +55,7 @@ jobs:
   link-check:
     uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
 ```
+[Details](docs/workflows/README.md)
 
 ---
 

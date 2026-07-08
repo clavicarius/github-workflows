@@ -1,0 +1,101 @@
+name: Quality Markdown
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Directory to scan for Markdown files
+        required: false
+        type: string
+        default: '.'
+
+      markdown-glob:
+        description: Glob pattern for Markdown files. Defaults to all Markdown files in working-directory.
+        required: false
+        type: string
+        default: ''
+
+      markdownlint-config:
+        description: Path to a markdownlint configuration file
+        required: false
+        type: string
+        default: ''
+
+      enable-markdownlint:
+        description: Run markdownlint checks for syntax, headings, and tables
+        required: false
+        type: boolean
+        default: true
+
+      enable-link-check:
+        description: Run Lychee link checks in Markdown files
+        required: false
+        type: boolean
+        default: true
+
+      fail-on-link-errors:
+        description: Fail the workflow when broken links are found
+        required: false
+        type: boolean
+        default: true
+
+      lychee-args:
+        description: Additional arguments passed to Lychee
+        required: false
+        type: string
+        default: ''
+
+      create-link-issue:
+        description: Create or update a GitHub issue when broken links are found
+        required: false
+        type: boolean
+        default: false
+
+      issue-title:
+        description: Title of the GitHub issue for broken links
+        required: false
+        type: string
+        default: 'Markdown Link Checker Report'
+
+      issue-label:
+        description: Label used for the broken link GitHub issue
+        required: false
+        type: string
+        default: 'dead-link'
+
+      link-report-file:
+        description: Lychee report output file
+        required: false
+        type: string
+        default: './lychee/out.md'
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-quality:
+    name: Markdown Quality
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Markdown quality checks
+        uses: clavicarius/github-workflows/.github/actions/quality-markdown@v1
+        with:
+          working-directory: ${{ inputs.working-directory }}
+          markdown-glob: ${{ inputs.markdown-glob }}
+          markdownlint-config: ${{ inputs.markdownlint-config }}
+          enable-markdownlint: ${{ inputs.enable-markdownlint }}
+          enable-link-check: ${{ inputs.enable-link-check }}
+          fail-on-link-errors: ${{ inputs.fail-on-link-errors }}
+          lychee-args: ${{ inputs.lychee-args }}
+          create-link-issue: ${{ inputs.create-link-issue }}
+          issue-title: ${{ inputs.issue-title }}
+          issue-label: ${{ inputs.issue-label }}
+          link-report-file: ${{ inputs.link-report-file }}

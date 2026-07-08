@@ -19,8 +19,8 @@ Jeder Workflow wird separat dokumentiert und beschreibt:
 | Workflow | Beschreibung |
 |---|---|
 | [Quality Link Check](quality-link-check.md) | Prüft Links und verwaltet automatisch Reports |
+| [Quality Markdown](quality-markdown.md) | Prüft Markdown-Syntax, Struktur und Links |
 | [Security CodeQL](security-codeql.md) | Führt statische Sicherheitsanalysen durch |
-| [Security Secret Scan](security-secret-scan.md) | Verhindert das Committen von Secrets |
 | [Release Docker](release-docker.md) | Erstellt und veröffentlicht Docker Images |
 
 ---

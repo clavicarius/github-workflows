@@ -22,7 +22,7 @@ Die Workflows in diesem Repository stellen eine gemeinsame CI/CD-Basis für mehr
 
 # Architektur
 
-Details --> (docs/architecture.md)
+[Details](docs/architecture.md)
 
 ---
 
@@ -45,6 +45,7 @@ Beispiele:
 
 quality-link-check.yml
 security-codeql.yml
+release-github.yml
 release-docker.yml
 ```
 
@@ -55,6 +56,7 @@ jobs:
   link-check:
     uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
 ```
+[Details](docs/workflows/README.md)
 
 ---
 
@@ -123,6 +125,18 @@ Das bedeutet:
 # Verfügbare Workflows
 Details (docs/workflows/README.md)
 
+## GitHub Release
+
+Datei:
+
+```
+.github/workflows/release-github.yml
+```
+
+Erzeugt ein GitHub Release für einen bestehenden Tag, generiert automatisch Release Notes und kann Artefakte aus dem aufrufenden Workflow an das Release anhängen.
+
+Weitere Details: `docs/workflows/release-github.md`
+
 
 # Namenskonventionen
 
@@ -140,6 +154,7 @@ Beispiele:
 quality-link-check.yml
 quality-phpcs.yml
 security-codeql.yml
+release-github.yml
 release-docker.yml
 ```
 

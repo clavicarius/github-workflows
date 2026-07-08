@@ -27,7 +27,6 @@ Jeder Workflow wird separat dokumentiert und beschreibt:
 | [Security CodeQL](security-codeql.md) | Führt statische Sicherheitsanalysen durch |
 | [Security Dependency Review](security-dependency-review.md) | Prüft neue Dependencies in Pull Requests |
 | [Security Secret Scan](security-secret-scan.md) | Verhindert das versehentliche Committen von Secrets |
-| [Release Docker](release-docker.md) | Erstellt und veröffentlicht Docker Images |
 
 ---
 

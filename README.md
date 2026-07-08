@@ -22,32 +22,7 @@ Die Workflows in diesem Repository stellen eine gemeinsame CI/CD-Basis für mehr
 
 # Architektur
 
-Das Repository folgt einer zweistufigen Architektur:
-
-```
-.github/
-├── workflows/
-│   ├── quality-link-check.yml
-│   ├── security-codeql.yml
-│   └── release-docker.yml
-│
-└── actions/
-    ├── lychee-check/
-    │   └── action.yml
-    ├── setup-environment/
-    │   └── action.yml
-    └── docker-build/
-        └── action.yml
-
-docs/
-├── quality.md
-├── security.md
-└── release.md
-
-scripts/
-├── helper scripts
-└── automation tools
-```
+Details --> (docs/architecture.md)
 
 ---
 

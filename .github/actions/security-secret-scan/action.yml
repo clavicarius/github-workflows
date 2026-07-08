@@ -1,0 +1,114 @@
+name: Security Secret Scan
+description: Scans repositories for leaked secrets using Gitleaks and GitHub Secret Scanning alerts
+author: claustrarius
+
+inputs:
+  gitleaks-config:
+    description: Path to a custom Gitleaks configuration file relative to the repository root
+    required: false
+    default: ''
+
+  scan-mode:
+    description: 'Scan scope: auto (event-based), full (entire repository history), or diff (changes only)'
+    required: false
+    default: 'auto'
+
+  check-github-alerts:
+    description: Fail when open GitHub Secret Scanning alerts exist for the repository
+    required: false
+    default: 'true'
+
+  enable-gitleaks-comments:
+    description: Enable Gitleaks pull request comments
+    required: false
+    default: 'true'
+
+  fail-on-findings:
+    description: Fail the workflow when secrets are detected
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Run Gitleaks
+      if: inputs.scan-mode == 'auto' || inputs.scan-mode == 'diff'
+      uses: gitleaks/gitleaks-action@v3
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+        GITLEAKS_CONFIG: ${{ inputs.gitleaks-config }}
+        GITLEAKS_ENABLE_COMMENTS: ${{ inputs.enable-gitleaks-comments }}
+
+    - name: Run Gitleaks full repository scan
+      if: inputs.scan-mode == 'full'
+      shell: bash
+      env:
+        GITLEAKS_CONFIG: ${{ inputs.gitleaks-config }}
+        FAIL_ON_FINDINGS: ${{ inputs.fail-on-findings }}
+      run: |
+        set -euo pipefail
+
+        args=(detect --source /repo --verbose --redact)
+
+        if [ -n "$GITLEAKS_CONFIG" ]; then
+          args+=(--config "/repo/$GITLEAKS_CONFIG")
+        fi
+
+        set +e
+        docker run --rm -v "$PWD:/repo" -w /repo ghcr.io/gitleaks/gitleaks:latest "${args[@]}"
+        exit_code=$?
+        set -e
+
+        if [ "$exit_code" -ne 0 ] && [ "$FAIL_ON_FINDINGS" = "true" ]; then
+          echo "::error::Gitleaks detected secrets in the repository."
+          exit 1
+        fi
+
+        if [ "$exit_code" -ne 0 ]; then
+          echo "::warning::Gitleaks reported findings, but fail-on-findings is disabled."
+        fi
+
+    - name: Check GitHub Secret Scanning alerts
+      if: inputs.check-github-alerts == 'true'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        FAIL_ON_FINDINGS: ${{ inputs.fail-on-findings }}
+        REPOSITORY: ${{ github.repository }}
+      run: |
+        set -euo pipefail
+
+        response_file="$RUNNER_TEMP/secret-scanning-alerts.json"
+        error_file="$RUNNER_TEMP/gh-error.log"
+
+        if ! gh api "repos/${REPOSITORY}/secret-scanning/alerts?state=open&per_page=100" > "$response_file" 2> "$error_file"; then
+          if grep -Eqi '404|not found' "$error_file"; then
+            echo "::warning::GitHub Secret Scanning is not enabled for this repository. Skipping alert check."
+            exit 0
+          fi
+
+          if grep -Eqi '403|resource not accessible|insufficient' "$error_file"; then
+            echo "::warning::Missing security-events: read permission. Skipping GitHub Secret Scanning alert check."
+            exit 0
+          fi
+
+          cat "$error_file"
+          exit 1
+        fi
+
+        alert_count=$(jq 'if type == "array" then length else 0 end' "$response_file")
+
+        if [ "$alert_count" -gt 0 ]; then
+          echo "Found $alert_count open GitHub Secret Scanning alert(s)."
+          jq -r '.[] | "- \(.secret_type_display_name // .secret_type // "unknown"): \(.html_url // "no-url")"' "$response_file" || true
+
+          if [ "$FAIL_ON_FINDINGS" = "true" ]; then
+            echo "::error::Open GitHub Secret Scanning alerts must be resolved before proceeding."
+            exit 1
+          fi
+
+          echo "::warning::Open GitHub Secret Scanning alerts were found, but fail-on-findings is disabled."
+        else
+          echo "No open GitHub Secret Scanning alerts found."
+        fi

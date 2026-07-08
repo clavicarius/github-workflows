@@ -20,7 +20,8 @@ Jeder Workflow wird separat dokumentiert und beschreibt:
 |---|---|
 | [Quality Link Check](quality-link-check.md) | Prüft Links und verwaltet automatisch Reports |
 | [Security CodeQL](security-codeql.md) | Führt statische Sicherheitsanalysen durch |
-| [GitHub Release](release-github.md) | Erstellt GitHub Releases für vorhandene Tags |
+| [Security Secret Scan](security-secret-scan.md) | Verhindert das Committen von Secrets |
+| [Release Docker](release-docker.md) | Erstellt und veröffentlicht Docker Images |
 
 ---
 

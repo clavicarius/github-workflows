@@ -50,6 +50,10 @@ git push origin v1.0.0
 
 Dadurch wird automatisch ein GitHub Release erstellt.
 
+Der Tag **muss vom `main` Branch** gesetzt werden. Wird ein `v*`-Tag auf einem
+anderen Branch gesetzt, schlägt der Job `validate-release-branch` mit einem
+Fehler fehl und das Release wird nicht erstellt.
+
 ---
 
 ## Konfiguration im Base Set
@@ -123,7 +127,13 @@ Alle Checks grün -> Merge erlaubt
 ## Ablauf bei Releases
 
 ```
-git tag v1.0.0
+git tag v1.0.0 (nur auf main!)
+      |
+      v
+validate-release-branch
+      |
+  OK? |
+      +-- Nein -> Fehler, kein Release
       |
       v
 release-github

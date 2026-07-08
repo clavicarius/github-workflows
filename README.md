@@ -146,34 +146,8 @@ Das bedeutet:
 ---
 
 # Verfügbare Workflows
+Details (docs/workflows/README.md)
 
-## Link Checker
-
-Datei:
-
-```
-.github/workflows/quality-link-check.yml
-```
-
-Prüft automatisch Links im Repository und erstellt bei Problemen ein GitHub Issue.
-
-### Funktionen
-
-- Prüfung von Markdown-Dateien und Dokumentation
-- Erkennung nicht erreichbarer URLs
-- Automatische Issue-Erstellung
-- Aktualisierung bestehender Reports
-- Automatisches Schließen behobener Reports
-
-### Beispiel Einbindung
-
-```yaml
-jobs:
-  link-check:
-    uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
-```
-
----
 
 # Namenskonventionen
 

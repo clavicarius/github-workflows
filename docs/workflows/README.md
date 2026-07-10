@@ -2,6 +2,8 @@
 
 Dieses Verzeichnis dokumentiert alle verfügbaren wiederverwendbaren GitHub Actions Workflows.
 
+Siehe auch: [CI-Plattform Soll-Zielbild](../ci-platform.md)
+
 Jeder Workflow wird separat dokumentiert und beschreibt:
 
 - Zweck

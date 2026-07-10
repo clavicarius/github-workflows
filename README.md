@@ -25,7 +25,7 @@ und werden versioniert veröffentlicht.
 
 # Architektur
 
-[Details](docs/architecture.md)
+[Soll-Zielbild](docs/ci-platform.md) | [Ist-Architektur](docs/architecture.md)
 
 ---
 

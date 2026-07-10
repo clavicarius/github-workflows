@@ -37,7 +37,8 @@ Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
 ## Verantwortung
 
 - Repository-Maintainer(s) sind verantwortlich für die Freigabe neuer Tags.
-- Bei Verstößen gegen die Tagging-Richtlinie wird **der PR-Autor / Trigger-Auslöser** automatisch über ein GitHub Issue benachrichtigt.
+- Bei Verstößen gegen die Tagging-Richtlinie wird **der PR-Autor / Trigger-Auslöser**
+  automatisch über ein GitHub Issue benachrichtigt.
 
 ---
 

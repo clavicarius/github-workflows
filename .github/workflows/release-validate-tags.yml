@@ -61,18 +61,21 @@ jobs:
           PATTERN_INPUT: ${{ inputs.version-pattern }}
         run: |
           set -euo pipefail
-          
+
           case "$PATTERN_INPUT" in
             simple)
               echo "pattern=^v[1-9][0-9]*\$" >> "$GITHUB_OUTPUT"
               echo "pattern_name=simple major versioning" >> "$GITHUB_OUTPUT"
               ;;
             semver)
-              echo "pattern=^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$" >> "$GITHUB_OUTPUT"
+              semver='^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'
+              semver="${semver}(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
+              semver="${semver}(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
+              semver="${semver}(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+              echo "pattern=${semver}" >> "$GITHUB_OUTPUT"
               echo "pattern_name=semantic versioning (semver)" >> "$GITHUB_OUTPUT"
               ;;
             *)
-              # Assume custom regex pattern
               echo "pattern=$PATTERN_INPUT" >> "$GITHUB_OUTPUT"
               echo "pattern_name=custom pattern" >> "$GITHUB_OUTPUT"
               ;;
@@ -91,27 +94,24 @@ jobs:
           echo "Validating tag: $TAG"
           echo "Pattern: $PATTERN_NAME"
 
-          # Format check
           if ! echo "$TAG" | grep -qEP "$PATTERN"; then
             echo "::error::Tag '$TAG' does not match expected format ($PATTERN_NAME)"
+            {
+              printf 'Der Tag `%s` ist ungültig.\n\n' "$TAG"
+              printf 'Erwartetes Format: `%s`\n' "$PATTERN_NAME"
+              printf 'Regex: `%s`\n\n' "$PATTERN"
+              printf '%s\n\n' \
+                'Bitte erstelle ein neues Tag mit korrektem Format.'
+              printf '@%s\n' "$PR_AUTHOR"
+            } > "$RUNNER_TEMP/invalid-tag-body.md"
             gh issue create \
               --title "Invalid version tag: $TAG" \
-              --body "Der Tag \`$TAG\` ist ungültig.
-
-          Erwartetes Format: \`$PATTERN_NAME\`
-          Regex: \`$PATTERN\`
-
-          Bitte erstelle ein neues Tag mit korrektem Format.
-
-          @${PR_AUTHOR}"
+              --body-file "$RUNNER_TEMP/invalid-tag-body.md"
             exit 1
           fi
 
-          # Fetch all tags (checkout already did fetch-depth: 0, but ensure)
           git fetch --tags --prune
 
-          # Find highest existing valid vN tag, excluding the current one
-          # Pattern matching depends on selected versioning scheme
           case "$PATTERN_NAME" in
             "simple major versioning")
               MAX=0
@@ -120,25 +120,30 @@ jobs:
                 if (( n > MAX )); then
                   MAX="$n"
                 fi
-              done < <(git tag -l 'v[1-9]*' | grep -E '^v[1-9][0-9]*$' \
-                | grep -v "^${TAG}$")
+              done < <(
+                git tag -l 'v[1-9]*' \
+                  | grep -E '^v[1-9][0-9]*$' \
+                  | grep -v "^${TAG}$"
+              )
 
               CUR="${TAG#v}"
               if (( CUR <= MAX )); then
                 echo "::error::Tag $TAG is not greater than existing maximum v${MAX}"
+                {
+                  printf 'Der Tag `%s` ist ungültig, weil er nicht größer ist als ' \
+                    'das aktuell größte existierende Tag (`v%s`).\n\n' "$TAG" "$MAX"
+                  printf '%s\n\n' \
+                    'Neue Tags müssen numerisch größer sein als das derzeit größte `vNNN`. Lücken sind erlaubt.'
+                  printf '%s\n' 'Details:'
+                  printf -- '- Geprüftes Tag: `%s`\n' "$TAG"
+                  printf -- '- Größtes bestehendes gültiges Tag: `v%s`\n\n' "$MAX"
+                  printf '%s\n\n' \
+                    'Bitte setze ein neues Tag mit einer größeren Nummer.'
+                  printf '@%s\n' "$PR_AUTHOR"
+                } > "$RUNNER_TEMP/not-monotonic-body.md"
                 gh issue create \
                   --title "Invalid version tag (not monotonic): $TAG" \
-                  --body "Der Tag \`$TAG\` ist ungültig, weil er nicht größer ist als das aktuell größte existierende Tag (\`v${MAX}\`).
-
-          Neue Tags müssen numerisch größer sein als das derzeit größte \`vNNN\`. Lücken sind erlaubt.
-
-          Details:
-          - Geprüftes Tag: \`$TAG\`
-          - Größtes bestehendes gültiges Tag: \`v${MAX}\`
-
-          Bitte setze ein neues Tag mit einer größeren Nummer.
-
-          @${PR_AUTHOR}"
+                  --body-file "$RUNNER_TEMP/not-monotonic-body.md"
                 exit 1
               fi
 

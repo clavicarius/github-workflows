@@ -65,6 +65,7 @@ Lücken sind erlaubt (z. B. `v1` → `v4` ist gültig, sofern `v4` > höchstes e
 ### Custom Pattern
 
 Sie können jedes gültige Regex-Pattern übergeben, z. B.:
+
 - `^v[0-9]+\.[0-9]+$` für Major.Minor-only
 - `^release-\d{4}-\d{2}$` für Datum-basierte Tags
 

@@ -4,6 +4,7 @@ Datei:
 
 ```
 .github/workflows/security-secret-scan.yml
+.github/actions/security-secret-scan/action.yml
 ```
 
 ---

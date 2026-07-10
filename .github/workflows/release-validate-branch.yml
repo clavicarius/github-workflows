@@ -1,4 +1,4 @@
-name: release-validate-branch
+name: Release Validate Branch
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: security-codeql
+name: Security CodeQL
 
 on:
   workflow_call:

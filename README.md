@@ -47,8 +47,9 @@ Beispiele:
 
 quality-link-check.yml
 security-codeql.yml
+release-validate-tags.yml
+release-validate-branch.yml
 release-github.yml
-release-docker.yml
 ```
 
 Ein Workflow kann von anderen Repositorys eingebunden werden:
@@ -78,9 +79,9 @@ Beispiele:
 .github/actions/
 
 lychee-check/
-docker-build/
-setup-node/
-markdown-lint/
+quality-link-check/
+quality-markdown/
+release-validate-tags/
 ```
 
 Composite Actions enthalten wiederverwendbare Implementierungsdetails, während Workflows die Orchestrierung übernehmen.
@@ -89,7 +90,7 @@ Beispiel:
 
 ```yaml
 - name: Check links
-  uses: clavicarius/github-workflows/.github/actions/lychee-check@v1
+  uses: clavicarius/github-workflows/.github/actions/quality-link-check@v1
 ```
 
 ---
@@ -125,7 +126,8 @@ Das bedeutet:
 ---
 
 # Verfügbare Workflows
-Details (docs/workflows/README.md)
+
+[Details](docs/workflows/README.md)
 
 ## GitHub Release
 
@@ -153,10 +155,9 @@ Beispiele:
 
 ```bash
 quality-link-check.yml
-quality-phpcs.yml
 security-codeql.yml
+release-validate-tags.yml
 release-github.yml
-release-docker.yml
 ```
 
 Verfügbare Bereiche:
@@ -176,16 +177,16 @@ Verfügbare Bereiche:
 Composite Actions verwenden:
 
 ```bash
-<funktion>
+<category>-<purpose>
 ```
 
 Beispiele:
 
 ```bash
-lychee-check
-docker-build
-setup-node
-version-check
+quality-link-check
+quality-markdown
+release-validate-tags
+release-validate-branch
 ```
 
 ---

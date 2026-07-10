@@ -4,6 +4,7 @@ Datei:
 
 ```
 .github/workflows/quality-link-check.yml
+.github/actions/quality-link-check/action.yml
 ```
 
 ---

@@ -4,6 +4,7 @@ Datei:
 
 ```
 .github/workflows/quality-markdown.yml
+.github/actions/quality-markdown/action.yml
 ```
 
 ---

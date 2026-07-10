@@ -46,7 +46,10 @@ Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
 ## Ort der Dokumentation
 
 - Diese Regel steht in `docs/RELEASING.md`.
-- Workflow-Dokumentation: `docs/workflows/release-validate-tags.md`
+- Tag-Validierung: [release-validate-tags](workflows/release-validate-tags.md)
+- Branch-Validierung: [release-validate-branch](workflows/release-validate-branch.md)
+- Release-Erstellung: [release-github](workflows/release-github.md)
+- Orchestrierung: [quality-base-set](workflows/quality-base-set.md)
 
 ---
 
@@ -87,11 +90,18 @@ Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
 
 ## Automatisierte Prüfung (Kurz)
 
-- Eine GitHub Action (`.github/workflows/release-validate-tags.yml`) prüft
-  Tag-Pushes über das Quality Base Set.
-- Sie validiert Format, Monotonie (bei Simple) und andere Aspekte.
-- Bei Verstößen schlägt der Workflow fehl und ein Issue wird **dem Autor** erstellt.
-- Das verwendete Versionierungsmuster ist konfigurierbar (siehe `version-pattern`-Input).
+Über das [Quality Base Set](workflows/quality-base-set.md) laufen bei Tag-Pushes
+drei aufeinanderfolgende Schritte:
+
+1. [release-validate-tags](workflows/release-validate-tags.md) — Format und
+   Monotonie (bei Simple)
+2. [release-validate-branch](workflows/release-validate-branch.md) — Tag muss
+   auf `main` liegen
+3. [release-github](workflows/release-github.md) — GitHub Release erstellen
+
+Bei Verstößen schlägt der jeweilige Workflow fehl. Bei Tag-Formatfehlern wird
+zusätzlich ein Issue für den Autor erstellt. Das verwendete
+Versionierungsmuster ist konfigurierbar (siehe `version-pattern`-Input).
 
 ---
 

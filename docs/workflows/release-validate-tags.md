@@ -179,6 +179,7 @@ Wenn das Tag ungültig ist:
 - [Release- und Tagging-Richtlinie](../RELEASING.md)
 - [Semantic Versioning](https://semver.org/)
 - [Quality Base Set](quality-base-set.md)
+- [Release Validate Branch](release-validate-branch.md)
 
 ---
 

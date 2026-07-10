@@ -4,6 +4,7 @@ Datei:
 
 ```
 .github/workflows/security-dependency-review.yml
+.github/actions/security-dependency-review/action.yml
 ```
 
 ---

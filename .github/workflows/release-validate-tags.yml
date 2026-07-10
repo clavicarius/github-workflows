@@ -1,4 +1,4 @@
-name: release-validate-tags
+name: Release Validate Tags
 
 on:
   workflow_call:

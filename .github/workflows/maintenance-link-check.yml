@@ -1,4 +1,4 @@
-name: check-broken-links-in-markdown
+name: Maintenance Link Check
 
 on:
   workflow_dispatch:
@@ -74,7 +74,8 @@ jobs:
           if [ -n "$ISSUE_NUMBER" ]; then
             echo "Closing issue #$ISSUE_NUMBER"
             gh issue close "$ISSUE_NUMBER" \
-              --comment "✅ All previously reported broken links have been resolved."
+              --comment \
+              "✅ All previously reported broken links have been resolved."
           else
             echo "No open link checker issue found."
           fi

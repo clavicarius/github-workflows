@@ -182,7 +182,7 @@ Externe Projekte binden die einzelnen Workflows direkt ein:
 ```yaml
 jobs:
   link-check:
-    uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 ---

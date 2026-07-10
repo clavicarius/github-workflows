@@ -146,7 +146,7 @@ on:
 
 jobs:
   validate-tag:
-    uses: clavicarius/github-workflows/.github/workflows/release-validate-tags.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/release-validate-tags.yml@v1
     with:
       tag: ${{ github.ref_name }}
       version-pattern: 'semver'
@@ -159,7 +159,7 @@ steps:
   - uses: actions/checkout@v4
     with:
       fetch-depth: 0
-  - uses: clavicarius/github-workflows/.github/actions/release-validate-tags@v1
+  - uses: clavicarius/ci-platform/.github/actions/release-validate-tags@v1
     with:
       tag: ${{ github.ref_name }}
       notify-user: ${{ github.actor }}
@@ -195,5 +195,5 @@ v1
 ```
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/release-validate-tags.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/release-validate-tags.yml@v1
 ```

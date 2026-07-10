@@ -115,7 +115,7 @@ permissions:
 
 jobs:
   lint:
-    uses: clavicarius/github-workflows/.github/workflows/quality-lint.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-lint.yml@v1
 ```
 
 ### Gezielte Aktivierung
@@ -123,7 +123,7 @@ jobs:
 ```yaml
 jobs:
   lint:
-    uses: clavicarius/github-workflows/.github/workflows/quality-lint.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-lint.yml@v1
     with:
       auto-detect: false
       php: true
@@ -135,7 +135,7 @@ jobs:
 ```yaml
 jobs:
   lint:
-    uses: clavicarius/github-workflows/.github/workflows/quality-lint.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-lint.yml@v1
     with:
       working-directory: apps/frontend
       javascript: true
@@ -188,7 +188,7 @@ v1
 Verwendung:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-lint.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/quality-lint.yml@v1
 ```
 
 ---

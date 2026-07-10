@@ -70,7 +70,7 @@ release-validate-tag-immutable
 ```yaml
 jobs:
   validate-branch:
-    uses: clavicarius/github-workflows/.github/workflows/release-validate-branch.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/release-validate-branch.yml@v1
 ```
 
 ---

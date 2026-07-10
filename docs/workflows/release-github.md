@@ -91,7 +91,7 @@ permissions:
 
 jobs:
   release:
-    uses: clavicarius/github-workflows/.github/workflows/release-github.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/release-github.yml@v1
     with:
       tag: ${{ github.ref_name }}
 ```
@@ -122,7 +122,7 @@ jobs:
 
   release:
     needs: build
-    uses: clavicarius/github-workflows/.github/workflows/release-github.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/release-github.yml@v1
     with:
       tag: ${{ github.ref_name }}
       artifact_name: release-asset
@@ -133,7 +133,7 @@ Mehrere Artefakte über ein Pattern anhängen:
 ```yaml
 jobs:
   release:
-    uses: clavicarius/github-workflows/.github/workflows/release-github.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/release-github.yml@v1
     with:
       tag: ${{ github.ref_name }}
       artifact_pattern: 'release-asset-*'
@@ -191,7 +191,7 @@ v1
 Verwendung:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/release-github.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/release-github.yml@v1
 ```
 
 ---

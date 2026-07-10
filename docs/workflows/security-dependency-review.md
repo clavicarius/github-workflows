@@ -93,7 +93,7 @@ permissions:
 
 jobs:
   dependency-review:
-    uses: clavicarius/github-workflows/.github/workflows/security-dependency-review.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-dependency-review.yml@v1
 ```
 
 ### Strengere Schwere
@@ -101,7 +101,7 @@ jobs:
 ```yaml
 jobs:
   dependency-review:
-    uses: clavicarius/github-workflows/.github/workflows/security-dependency-review.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-dependency-review.yml@v1
     with:
       fail-on-severity: high
 ```
@@ -111,7 +111,7 @@ jobs:
 ```yaml
 jobs:
   dependency-review:
-    uses: clavicarius/github-workflows/.github/workflows/security-dependency-review.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-dependency-review.yml@v1
     with:
       fail-on-severity: moderate
       deny-licenses: GPL-3.0, AGPL-3.0
@@ -122,7 +122,7 @@ jobs:
 ```yaml
 jobs:
   dependency-review:
-    uses: clavicarius/github-workflows/.github/workflows/security-dependency-review.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-dependency-review.yml@v1
     with:
       config-file: ./.github/dependency-review-config.yml
 ```
@@ -187,7 +187,7 @@ v1
 Verwendung:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/security-dependency-review.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/security-dependency-review.yml@v1
 ```
 
 ---

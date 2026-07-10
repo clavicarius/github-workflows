@@ -41,7 +41,7 @@ Workflows mit `workflow_call` werden direkt aus dem Repository eingebunden:
 ```yaml
 jobs:
   example:
-    uses: claustrarius/github-workflows/.github/workflows/<workflow>.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/<workflow>.yml@v1
 ```
 
 Beispiel:
@@ -49,7 +49,7 @@ Beispiel:
 ```yaml
 jobs:
   link-check:
-    uses: claustrarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 **Maintenance-Workflows** (z. B. `maintenance-link-check`) sind

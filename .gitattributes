@@ -1,2 +1,11 @@
-*.yml text eol=lf
+# Enforce LF line endings for all text files in the repository.
+# Prevents CRLF/LF churn across platforms and guarantees LF for
+# shell scripts executed on Linux runners.
+* text=auto eol=lf
+
+# Critical file types (explicit for clarity)
+*.sh   text eol=lf
+*.yml  text eol=lf
 *.yaml text eol=lf
+*.md   text eol=lf
+*.json text eol=lf

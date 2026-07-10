@@ -183,7 +183,7 @@ Verwendete Actions und Tools:
 
 - `actions/checkout`
 - `DavidAnson/markdownlint-cli2-action`
-- `lycheeverse/lychee-action`
+- `clavicarius/lychee-action`
 - GitHub CLI (`gh`) für optionale Issue-Verwaltung
 
 ---

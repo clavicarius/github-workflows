@@ -120,7 +120,7 @@ Wenn alle Links wieder funktionieren:
 Verwendete Actions:
 
 - `actions/checkout`
-- `lycheeverse/lychee-action`
+- `clavicarius/lychee-action`
 - GitHub CLI (`gh`)
 
 ---

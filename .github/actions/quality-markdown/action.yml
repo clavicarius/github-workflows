@@ -101,7 +101,7 @@ runs:
     - name: Run Lychee link check
       if: inputs.enable-link-check == 'true'
       id: lychee
-      uses: lycheeverse/lychee-action@v2
+      uses: clavicarius/lychee-action@v2
       with:
         fail: ${{ inputs.fail-on-link-errors }}
         args: ${{ steps.scope.outputs.lychee_args }}

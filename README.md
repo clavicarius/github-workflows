@@ -1,12 +1,13 @@
 # GitHub Workflows Repository
 
-Dieses Repository enthält zentral verwaltete 
+Dieses Repository enthält zentral verwaltete
 **wiederverwendbare GitHub Actions Workflows** und **Composite Actions** für mehrere Projekte.
 
-Ziel ist es, wiederkehrende CI/CD-Aufgaben nicht in jedem einzelnen Repository doppelt zu pflegen, 
+Ziel ist es, wiederkehrende CI/CD-Aufgaben nicht in jedem einzelnen Repository doppelt zu pflegen,
 sondern sie zentral bereitzustellen und über `workflow_call` einzubinden.
 
-Die Workflows in diesem Repository stellen eine gemeinsame CI/CD-Basis für mehrere Projekte bereit und werden versioniert veröffentlicht.
+Die Workflows in diesem Repository stellen eine gemeinsame CI/CD-Basis für mehrere Projekte bereit
+und werden versioniert veröffentlicht.
 
 ---
 
@@ -59,6 +60,7 @@ jobs:
   link-check:
     uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
 ```
+
 [Details](docs/workflows/README.md)
 
 ---
@@ -78,7 +80,6 @@ Beispiele:
 ```bash
 .github/actions/
 
-lychee-check/
 quality-link-check/
 quality-markdown/
 release-validate-tags/
@@ -137,7 +138,8 @@ Datei:
 .github/workflows/release-github.yml
 ```
 
-Erzeugt ein GitHub Release für einen bestehenden Tag, generiert automatisch Release Notes und kann Artefakte aus dem aufrufenden Workflow an das Release anhängen.
+Erzeugt ein GitHub Release für einen bestehenden Tag, generiert automatisch Release Notes
+und kann Artefakte aus dem aufrufenden Workflow an das Release anhängen.
 
 Weitere Details: `docs/workflows/release-github.md`
 

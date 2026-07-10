@@ -23,8 +23,9 @@ Standardmäßig gilt folgendes Versionierungsschema:
 
 ### Alternative: Semantic Versioning
 
-Repositories können auf **Semantic Versioning** (semver) wechseln, z. B. `v1.2.3-rc.1+build`.
-Dies wird durch den Parameter `version-pattern: 'semver'` im Workflow konfiguriert.
+Repositories können auf **Semantic Versioning** (semver) wechseln, z. B.
+`v1.2.3-rc.1+build`. Dies wird durch `version-pattern: 'semver'` konfiguriert.
+Bei semver wird nur das Regex-Format geprüft, keine Monotonie.
 
 Weitere Informationen: [semver.org](https://semver.org/)
 
@@ -87,8 +88,8 @@ Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
 ## Automatisierte Prüfung (Kurz)
 
 - Eine GitHub Action (`.github/workflows/release-validate-tags.yml`) prüft
-  Tag-Pushes und Release-Publishes.
-- Sie validiert Format, Monotonität (bei Simple) und andere Aspekte.
+  Tag-Pushes über das Quality Base Set.
+- Sie validiert Format, Monotonie (bei Simple) und andere Aspekte.
 - Bei Verstößen schlägt der Workflow fehl und ein Issue wird **dem Autor** erstellt.
 - Das verwendete Versionierungsmuster ist konfigurierbar (siehe `version-pattern`-Input).
 

@@ -1,0 +1,77 @@
+name: Release Validate Tags
+description: Validates version tag format and monotonicity for simple versioning
+author: claustrarius
+
+inputs:
+  tag:
+    description: Tag to validate. When empty, derived from GITHUB_REF.
+    required: false
+    default: ''
+
+  version-pattern:
+    description: 'Version pattern preset: simple, semver, or custom regex'
+    required: false
+    default: 'simple'
+
+  check-monotonicity:
+    description: Check monotonicity for simple versioning
+    required: false
+    default: 'true'
+
+  create-issue-on-failure:
+    description: Create or update a GitHub issue when validation fails
+    required: false
+    default: 'true'
+
+  issue-label:
+    description: Label used for validation issue reports
+    required: false
+    default: 'invalid-tag'
+
+  invalid-format-issue-title:
+    description: Title for invalid format issue reports
+    required: false
+    default: 'Invalid version tag report'
+
+  not-monotonic-issue-title:
+    description: Title for not monotonic issue reports
+    required: false
+    default: 'Invalid version tag (not monotonic) report'
+
+  notify-user:
+    description: GitHub user to mention in issue reports
+    required: false
+    default: ''
+
+outputs:
+  valid:
+    description: Whether the tag passed validation
+    value: ${{ steps.validate.outputs.valid }}
+  max_tag:
+    description: Highest existing valid tag for simple versioning
+    value: ${{ steps.validate.outputs.max_tag }}
+  tag:
+    description: Validated tag name
+    value: ${{ steps.validate.outputs.tag }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Validate version tag
+      id: validate
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        INPUT_TAG: ${{ inputs.tag }}
+        GITHUB_REF: ${{ github.ref }}
+        VERSION_PATTERN: ${{ inputs.version-pattern }}
+        CHECK_MONOTONICITY: ${{ inputs.check-monotonicity }}
+        CREATE_ISSUE_ON_FAILURE: ${{ inputs.create-issue-on-failure }}
+        ISSUE_LABEL: ${{ inputs.issue-label }}
+        INVALID_FORMAT_ISSUE_TITLE: ${{ inputs.invalid-format-issue-title }}
+        NOT_MONOTONIC_ISSUE_TITLE: ${{ inputs.not-monotonic-issue-title }}
+        NOTIFY_USER: ${{ inputs.notify-user }}
+      run: |
+        set -euo pipefail
+        bash "${GITHUB_WORKSPACE}/scripts/validate-version-tag.sh"

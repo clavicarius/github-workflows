@@ -24,6 +24,7 @@ Jeder Workflow wird separat dokumentiert und beschreibt:
 | [Quality Markdown](quality-markdown.md) | Prüft Markdown-Syntax, Struktur und Links |
 | [Quality YAML](quality-yaml.md) | Prüft YAML-Dateien auf Syntax und Struktur |
 | [Release GitHub](release-github.md) | Erstellt GitHub Releases für bestehende Git Tags |
+| [Release Validate Tags](release-validate-tags.md) | Prüft Tag-Format und Monotonie |
 | [Security CodeQL](security-codeql.md) | Führt statische Sicherheitsanalysen durch |
 | [Security Dependency Review](security-dependency-review.md) | Prüft neue Dependencies in Pull Requests |
 | [Security Secret Scan](security-secret-scan.md) | Verhindert das versehentliche Committen von Secrets |

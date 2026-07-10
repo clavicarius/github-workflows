@@ -51,8 +51,16 @@ jobs:
       skip-yaml: true
       skip-markdown: true
 
+  release-validate-tags:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    uses: ./.github/workflows/release-validate-tags.yml
+    with:
+      tag: ${{ github.ref_name }}
+      notify-user: ${{ github.actor }}
+
   validate-release-branch:
     name: Validate Release Branch
+    needs: release-validate-tags
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:
@@ -71,7 +79,8 @@ jobs:
 
           git fetch origin main
 
-          if ! git branch -r --contains "$TAG_SHA" | grep -qE '^\s*origin/main$'; then
+          if ! git branch -r --contains "$TAG_SHA" \
+            | grep -qE '^\s*origin/main$'; then
             echo "Error: Release tags must be created from the main branch." >&2
             echo "The commit $TAG_SHA is not on origin/main." >&2
             exit 1

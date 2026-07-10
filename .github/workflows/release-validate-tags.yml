@@ -6,22 +6,66 @@ on:
       tag:
         description: >
           Tag to validate (e.g. v3). When empty, the tag is derived from
-          github.ref (used when triggered via push).
+          github.ref in the calling workflow context.
         required: false
         type: string
         default: ''
+
       version-pattern:
         description: >
-          Regex pattern for version validation. Built-in presets:
-          - 'simple': ^v[1-9][0-9]*$ (default) - simple major versioning
-          - 'semver': semantic versioning (e.g., v1.2.3-rc.1+build)
-          - custom regex pattern (e.g., ^v[0-9]+\.[0-9]+$)
+          Version pattern preset: simple, semver, or a custom regex pattern.
         required: false
         type: string
         default: 'simple'
-  push:
-    tags:
-      - 'v*'
+
+      check-monotonicity:
+        description: >
+          Check monotonicity for simple versioning. Ignored for semver and
+          custom patterns.
+        required: false
+        type: boolean
+        default: true
+
+      create-issue-on-failure:
+        description: Create or update a GitHub issue when validation fails
+        required: false
+        type: boolean
+        default: true
+
+      issue-label:
+        description: Label used for validation issue reports
+        required: false
+        type: string
+        default: 'invalid-tag'
+
+      invalid-format-issue-title:
+        description: Title for invalid format issue reports
+        required: false
+        type: string
+        default: 'Invalid version tag report'
+
+      not-monotonic-issue-title:
+        description: Title for not monotonic issue reports
+        required: false
+        type: string
+        default: 'Invalid version tag (not monotonic) report'
+
+      notify-user:
+        description: GitHub user to mention in issue reports
+        required: false
+        type: string
+        default: ''
+
+    outputs:
+      valid:
+        description: Whether the tag passed validation
+        value: ${{ jobs.validate-tag.outputs.valid }}
+      max_tag:
+        description: Highest existing valid tag for simple versioning
+        value: ${{ jobs.validate-tag.outputs.max_tag }}
+      tag:
+        description: Validated tag name
+        value: ${{ jobs.validate-tag.outputs.tag }}
 
 permissions:
   contents: read
@@ -36,120 +80,28 @@ jobs:
       contents: read
       issues: write
 
+    outputs:
+      valid: ${{ steps.validate.outputs.valid }}
+      max_tag: ${{ steps.validate.outputs.max_tag }}
+      tag: ${{ steps.validate.outputs.tag }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Resolve tag
-        id: resolve
-        env:
-          INPUT_TAG: ${{ inputs.tag }}
-          GITHUB_REF: ${{ github.ref }}
-        run: |
-          set -euo pipefail
-          if [ -n "$INPUT_TAG" ]; then
-            echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
-          else
-            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Resolve version pattern
-        id: pattern
-        env:
-          PATTERN_INPUT: ${{ inputs.version-pattern }}
-        run: |
-          set -euo pipefail
-
-          case "$PATTERN_INPUT" in
-            simple)
-              echo "pattern=^v[1-9][0-9]*\$" >> "$GITHUB_OUTPUT"
-              echo "pattern_name=simple major versioning" >> "$GITHUB_OUTPUT"
-              ;;
-            semver)
-              semver='^v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)'
-              semver="${semver}(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
-              semver="${semver}(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
-              semver="${semver}(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
-              echo "pattern=${semver}" >> "$GITHUB_OUTPUT"
-              echo "pattern_name=semantic versioning (semver)" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "pattern=$PATTERN_INPUT" >> "$GITHUB_OUTPUT"
-              echo "pattern_name=custom pattern" >> "$GITHUB_OUTPUT"
-              ;;
-          esac
-
-      - name: Validate format and monotonicity
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ steps.resolve.outputs.tag }}
-          PATTERN: ${{ steps.pattern.outputs.pattern }}
-          PATTERN_NAME: ${{ steps.pattern.outputs.pattern_name }}
-          PR_AUTHOR: ${{ github.actor }}
-        run: |
-          set -euo pipefail
-
-          echo "Validating tag: $TAG"
-          echo "Pattern: $PATTERN_NAME"
-
-          if ! echo "$TAG" | grep -qEP "$PATTERN"; then
-            echo "::error::Tag '$TAG' does not match expected format ($PATTERN_NAME)"
-            {
-              printf 'Der Tag `%s` ist ungültig.\n\n' "$TAG"
-              printf 'Erwartetes Format: `%s`\n' "$PATTERN_NAME"
-              printf 'Regex: `%s`\n\n' "$PATTERN"
-              printf '%s\n\n' \
-                'Bitte erstelle ein neues Tag mit korrektem Format.'
-              printf '@%s\n' "$PR_AUTHOR"
-            } > "$RUNNER_TEMP/invalid-tag-body.md"
-            gh issue create \
-              --title "Invalid version tag: $TAG" \
-              --body-file "$RUNNER_TEMP/invalid-tag-body.md"
-            exit 1
-          fi
-
-          git fetch --tags --prune
-
-          case "$PATTERN_NAME" in
-            "simple major versioning")
-              MAX=0
-              while IFS= read -r t; do
-                n="${t#v}"
-                if (( n > MAX )); then
-                  MAX="$n"
-                fi
-              done < <(
-                git tag -l 'v[1-9]*' \
-                  | grep -E '^v[1-9][0-9]*$' \
-                  | grep -v "^${TAG}$"
-              )
-
-              CUR="${TAG#v}"
-              if (( CUR <= MAX )); then
-                echo "::error::Tag $TAG is not greater than existing maximum v${MAX}"
-                {
-                  printf 'Der Tag `%s` ist ungültig, weil er nicht größer ist als ' \
-                    'das aktuell größte existierende Tag (`v%s`).\n\n' "$TAG" "$MAX"
-                  printf '%s\n\n' \
-                    'Neue Tags müssen numerisch größer sein als das derzeit größte `vNNN`. Lücken sind erlaubt.'
-                  printf '%s\n' 'Details:'
-                  printf -- '- Geprüftes Tag: `%s`\n' "$TAG"
-                  printf -- '- Größtes bestehendes gültiges Tag: `v%s`\n\n' "$MAX"
-                  printf '%s\n\n' \
-                    'Bitte setze ein neues Tag mit einer größeren Nummer.'
-                  printf '@%s\n' "$PR_AUTHOR"
-                } > "$RUNNER_TEMP/not-monotonic-body.md"
-                gh issue create \
-                  --title "Invalid version tag (not monotonic): $TAG" \
-                  --body-file "$RUNNER_TEMP/not-monotonic-body.md"
-                exit 1
-              fi
-
-              echo "Tag $TAG is valid (greater than v${MAX})."
-              ;;
-            *)
-              echo "Tag $TAG matches $PATTERN_NAME pattern."
-              ;;
-          esac
+      - name: Run release validate tags
+        id: validate
+        uses: ./.github/actions/release-validate-tags
+        with:
+          tag: ${{ inputs.tag }}
+          version-pattern: ${{ inputs.version-pattern }}
+          check-monotonicity: ${{ inputs.check-monotonicity }}
+          create-issue-on-failure: ${{ inputs.create-issue-on-failure }}
+          issue-label: ${{ inputs.issue-label }}
+          invalid-format-issue-title: ${{ inputs.invalid-format-issue-title }}
+          not-monotonic-issue-title: ${{ inputs.not-monotonic-issue-title }}
+          notify-user: >-
+            ${{ inputs.notify-user != '' && inputs.notify-user ||
+            github.actor }}

@@ -312,6 +312,26 @@ Merge
 Release Tag
 ```
 
+## Lokale Qualitätsprüfungen (Git Hooks)
+
+Vor `commit` und `push` können dieselben Prüfungen wie im PR-Gate lokal laufen
+(markdownlint für `docs/**/*.md`, yamllint für `.github/workflows`).
+
+Einmalig installieren:
+
+```bash
+./scripts/install-git-hooks.sh
+```
+
+Manuell ausführen:
+
+```bash
+./scripts/run-local-quality-checks.sh --staged
+./scripts/run-local-quality-checks.sh origin/main..HEAD
+```
+
+Einmal überspringen: `SKIP_QUALITY_HOOKS=1 git commit` bzw. `git push`
+
 ---
 
 # Aktualisierung bestehender Workflows

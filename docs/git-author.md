@@ -46,6 +46,19 @@ source ./scripts/git-author-env.sh
 git rebase HEAD~3 --exec "git commit --amend --no-edit --reset-author"
 ```
 
+## Git Hooks (Qualitätsprüfungen)
+
+Versionierte Hooks unter `scripts/hooks/` — einmal pro Clone installieren:
+
+```bash
+./scripts/install-git-hooks.sh
+```
+
+- **pre-commit:** markdownlint/yamllint auf gestagten Dateien
+- **pre-push:** gleiche Prüfungen für den Push-Bereich
+
+Überspringen: `SKIP_QUALITY_HOOKS=1 git commit|push`
+
 ## Agent
 
 Cursor reads `.cursor/rules/git-commit-author.mdc` and:

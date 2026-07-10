@@ -1,8 +1,11 @@
 # CI Platform Repository
 
-Zentrales Repository für wiederverwendbare GitHub Actions, Reusable Workflows, gemeinsame CI/CD-Skripte und organisatorische Standards.
+Zentrales Repository für wiederverwendbare GitHub Actions, Reusable Workflows,
+gemeinsame CI/CD-Skripte und organisatorische Standards.
 
-Dieses Dokument beschreibt das **Soll-Zielbild** der internen CI/CD-Plattform für alle Projekte der Organisation. Es definiert den gewünschten Endzustand — unabhängig vom aktuellen Ist-Stand.
+Dieses Dokument beschreibt das **Soll-Zielbild** der internen CI/CD-Plattform für alle
+Projekte der Organisation. Es definiert den gewünschten Endzustand — unabhängig vom
+aktuellen Ist-Stand.
 
 Repository: [clavicarius/ci-platform](https://github.com/clavicarius/ci-platform/)
 
@@ -218,7 +221,9 @@ Beispiele:
 - Release Automation (`scripts/release/`)
 - Validierungsskripte (`scripts/validation/`)
 
-**Nutzungsregel:** `scripts/` sind nicht Teil der Consumer-API. Consumer-Repositories greifen nicht direkt auf Skripte zu, sondern nutzen sie indirekt über Composite Actions oder Reusable Workflows.
+**Nutzungsregel:** `scripts/` sind nicht Teil der Consumer-API. Consumer-Repositories greifen
+nicht direkt auf Skripte zu, sondern nutzen sie indirekt über Composite Actions oder
+Reusable Workflows.
 
 Ziel:
 
@@ -284,7 +289,8 @@ permissions:
   security-events: write   # nur wenn vom Workflow benötigt
 ```
 
-Secrets werden nicht aus ci-platform übernommen. Erforderliche Secrets sind in der jeweiligen Workflow-Dokumentation (`docs/workflows/<name>.md`) aufgeführt.
+Secrets werden nicht aus ci-platform übernommen. Erforderliche Secrets sind in der
+jeweiligen Workflow-Dokumentation (`docs/workflows/<name>.md`) aufgeführt.
 
 ## Version-Bindung
 
@@ -326,7 +332,8 @@ v2.0.0-rc.1
 
 ## Floating Major für Consumer
 
-Consumer binden an Major-Versionen (`@v1`, `@v2`). Der Major-Tag ist ein **Floating Alias** auf das jeweils neueste kompatible Release innerhalb dieser Major-Linie:
+Consumer binden an Major-Versionen (`@v1`, `@v2`). Der Major-Tag ist ein **Floating Alias**
+auf das jeweils neueste kompatible Release innerhalb dieser Major-Linie:
 
 ```text
 @v1  →  zeigt auf neuestes v1.x.x
@@ -340,7 +347,8 @@ Der Release-Workflow erzeugt bei jedem Release:
 1. Semver-Tag (`v1.2.3`)
 2. Major-Alias-Tag (`v1`) — zeigt auf den neuesten Stand der Major-Linie
 
-Alias-Tag-Updates sind eine **bewusste Ausnahme** zur Tag-Immutabilität. Sie erfolgen ausschließlich durch den automatisierten Release-Workflow — nicht durch manuellen Force-Push.
+Alias-Tag-Updates sind eine **bewusste Ausnahme** zur Tag-Immutabilität. Sie erfolgen
+ausschließlich durch den automatisierten Release-Workflow — nicht durch manuellen Force-Push.
 
 ## Breaking Changes
 
@@ -585,4 +593,6 @@ Die CI-Plattform soll:
 
 sein.
 
-Langfristig dient das Repository als zentrale Grundlage für sämtliche CI/CD-Prozesse innerhalb der Organisation. Consumer-Repositories wählen flexibel zwischen Einzelworkflows und Basis-Set-Bundles und binden über stabile Major-Versionen (`@v1`) ein.
+Langfristig dient das Repository als zentrale Grundlage für sämtliche CI/CD-Prozesse
+innerhalb der Organisation. Consumer-Repositories wählen flexibel zwischen Einzelworkflows
+und Basis-Set-Bundles und binden über stabile Major-Versionen (`@v1`) ein.

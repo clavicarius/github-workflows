@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# Git pre-push hook: run local quality checks before push.
+# Install: ./scripts/install-git-hooks.sh
+# Skip once: SKIP_QUALITY_HOOKS=1 git push
+
+set -euo pipefail
+
+if [ "${SKIP_QUALITY_HOOKS:-}" = "1" ]; then
+  echo "pre-push: SKIP_QUALITY_HOOKS=1, skipping quality checks."
+  exit 0
+fi
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$ROOT"
+
+zero_sha="0000000000000000000000000000000000000000"
+ranges=()
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ -n "$local_sha" ] || continue
+
+  if [ "$remote_sha" = "$zero_sha" ]; then
+    if git show-ref --verify --quiet refs/heads/main; then
+      ranges+=("main..$local_sha")
+    elif git show-ref --verify --quiet refs/remotes/origin/main; then
+      ranges+=("origin/main..$local_sha")
+    else
+      ranges+=("$local_sha")
+    fi
+  else
+    ranges+=("$remote_sha..$local_sha")
+  fi
+done
+
+if [ "${#ranges[@]}" -eq 0 ]; then
+  echo "pre-push: no refs to check, running checks for HEAD."
+  "$ROOT/scripts/run-local-quality-checks.sh" "HEAD"
+  exit $?
+fi
+
+echo "pre-push: running quality checks for ${#ranges[@]} push range(s)..."
+
+for range in "${ranges[@]}"; do
+  echo "pre-push: checking $range"
+  "$ROOT/scripts/run-local-quality-checks.sh" "$range"
+done
+
+echo "pre-push: quality checks passed."

@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Git pre-commit hook: run quality checks on staged files.
+# Install: ./scripts/install-git-hooks.sh
+# Skip once: SKIP_QUALITY_HOOKS=1 git commit
+
+set -euo pipefail
+
+if [ "${SKIP_QUALITY_HOOKS:-}" = "1" ]; then
+  echo "pre-commit: SKIP_QUALITY_HOOKS=1, skipping quality checks."
+  exit 0
+fi
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$ROOT"
+
+echo "pre-commit: running quality checks on staged files..."
+"$ROOT/scripts/run-local-quality-checks.sh" --staged

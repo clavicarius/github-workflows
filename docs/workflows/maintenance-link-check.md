@@ -6,6 +6,11 @@ Datei:
 .github/workflows/maintenance-link-check.yml
 ```
 
+> **Breaking change (v1):** Umbenannt von
+> `check-broken-links-in-markdown.yml`. Betrifft nur dieses Repository
+> (kein `workflow_call`). Externe Consumer, die den Dateipfad direkt
+> referenziert haben, müssen auf den neuen Namen umstellen.
+
 ---
 
 ## Zweck

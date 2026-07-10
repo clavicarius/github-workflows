@@ -72,6 +72,12 @@ report_issue() {
   create_or_update_issue "$title" "$body_file" "${ISSUE_LABEL:-invalid-tag}"
 }
 
+append_notify_user() {
+  if [ -n "${NOTIFY_USER:-}" ]; then
+    printf '@%s\n' "$NOTIFY_USER"
+  fi
+}
+
 write_outputs() {
   local valid="$1"
   local max_tag="$2"
@@ -104,7 +110,7 @@ if ! echo "$TAG" | grep -qP "$PATTERN"; then
       printf 'Regex: `%s`\n\n' "$PATTERN"
       printf '%s\n\n' \
         'Bitte erstelle ein neues Tag mit korrektem Format.'
-      printf '@%s\n' "${NOTIFY_USER:-}"
+      append_notify_user
     } > "${RUNNER_TEMP:-/tmp}/invalid-tag-body.md"
     report_issue \
       "${INVALID_FORMAT_ISSUE_TITLE:-Invalid version tag report}" \
@@ -116,7 +122,7 @@ fi
 
 git fetch --tags --prune 2>/dev/null || true
 
-if [ "$PATTERN_NAME" = "simple major versioning" ] \
+if [ "${VERSION_PATTERN:-simple}" = "simple" ] \
   && [ "$CHECK_MONOTONICITY" = "true" ]; then
   MAX=0
   while IFS= read -r t; do
@@ -144,7 +150,7 @@ if [ "$PATTERN_NAME" = "simple major versioning" ] \
         printf -- '- Größtes bestehendes gültiges Tag: `v%s`\n\n' "$MAX"
         printf '%s\n\n' \
           'Bitte setze ein neues Tag mit einer größeren Nummer.'
-        printf '@%s\n' "${NOTIFY_USER:-}"
+        append_notify_user
       } > "${RUNNER_TEMP:-/tmp}/not-monotonic-body.md"
       report_issue \
         "${NOT_MONOTONIC_ISSUE_TITLE:-Invalid version tag (not monotonic) report}" \

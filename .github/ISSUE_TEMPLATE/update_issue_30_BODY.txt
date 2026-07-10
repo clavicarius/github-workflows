@@ -1,8 +1,0 @@
-Version tags benötigen zwingend ein Regex-Pattern, das vorgegeben wird.
-Standardmäßig werden zwei Varianten unterstützt:
-- simple: ^v[1-9][0-9]*$ (Standardeinstellung)
-- semver: semantic versioning
-
-Bereits veröffentlichte Versionsnummern dürfen nicht mehr geändert werden.
-Bei Verstößen wird automatisch der PR-Autor benachrichtigt.
-Doku wurde aktualisiert und verweist nun auf `.github/workflows/release-validate-tags.yml`.

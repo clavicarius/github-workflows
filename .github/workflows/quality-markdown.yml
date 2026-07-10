@@ -86,7 +86,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Markdown quality checks
-        uses: ./.github/actions/quality-markdown
+        uses: ./actions/quality-markdown
         with:
           working-directory: ${{ inputs.working-directory }}
           markdown-glob: ${{ inputs.markdown-glob }}

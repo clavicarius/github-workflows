@@ -16,8 +16,9 @@ The repository follows this structure:
 
 ```
 .github/
-├── workflows/
-└── actions/
+└── workflows/
+
+actions/
 
 docs/
 
@@ -94,13 +95,13 @@ Reusable step collections SHOULD be implemented as Composite Actions.
 Location:
 
 ```
-.github/actions/<action-name>/action.yml
+actions/<action-name>/action.yml
 ```
 
 Examples:
 
 ```
-.github/actions/
+actions/
 ├── lychee-check/
 ├── docker-build/
 └── setup-node/

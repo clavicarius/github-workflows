@@ -5,31 +5,31 @@ Das Repository folgt einer zweistufigen Architektur:
 ```
 ci-platform/
 ├── .github/
-│   ├── workflows/
-│   │   ├── quality-base-set.yml
-│   │   ├── quality-link-check.yml
-│   │   ├── quality-markdown.yml
-│   │   ├── quality-yaml.yml
-│   │   ├── quality-lint.yml
-│   │   ├── security-codeql.yml
-│   │   ├── security-secret-scan.yml
-│   │   ├── security-dependency-review.yml
-│   │   ├── release-validate-tag-immutable.yml
-│   │   ├── release-validate-tags.yml
-│   │   ├── release-validate-branch.yml
-│   │   ├── release-github.yml
-│   │   └── maintenance-link-check.yml
-│   │
-│   └── actions/
-│       ├── quality-link-check/
-│       ├── quality-markdown/
-│       ├── quality-yaml/
-│       ├── quality-lint/
-│       ├── security-secret-scan/
-│       ├── security-dependency-review/
-│       ├── release-validate-tag-immutable/
-│       ├── release-validate-tags/
-│       └── release-validate-branch/
+│   └── workflows/
+│       ├── quality-base-set.yml
+│       ├── quality-link-check.yml
+│       ├── quality-markdown.yml
+│       ├── quality-yaml.yml
+│       ├── quality-lint.yml
+│       ├── security-codeql.yml
+│       ├── security-secret-scan.yml
+│       ├── security-dependency-review.yml
+│       ├── release-validate-tag-immutable.yml
+│       ├── release-validate-tags.yml
+│       ├── release-validate-branch.yml
+│       ├── release-github.yml
+│       └── maintenance-link-check.yml
+│
+├── actions/
+│   ├── quality-link-check/
+│   ├── quality-markdown/
+│   ├── quality-yaml/
+│   ├── quality-lint/
+│   ├── security-secret-scan/
+│   ├── security-dependency-review/
+│   ├── release-validate-tag-immutable/
+│   ├── release-validate-tags/
+│   └── release-validate-branch/
 │
 ├── docs/
 │   ├── workflows/
@@ -57,7 +57,7 @@ Damit bleibt die Verantwortung klar getrennt:
 | `docs/workflows/README.md` | Übersicht aller verfügbaren Workflows |
 | `docs/workflows/<workflow>.md` | Detaildokumentation eines einzelnen Workflows |
 | `.github/workflows/<workflow>.yml` | Trigger, Permissions, Orchestrierung |
-| `.github/actions/<action>/action.yml` | Wiederverwendbare Implementierungsschritte |
+| `actions/<action>/action.yml` | Wiederverwendbare Implementierungsschritte |
 | `scripts/*.sh` | Komplexe Shell-Logik |
 
 ---
@@ -81,7 +81,7 @@ Ordnername entspricht dem Workflow-Namen, wenn die Action die
 Implementierung des Workflows kapselt:
 
 ```
-.github/actions/release-validate-tags/action.yml
+actions/release-validate-tags/action.yml
   ↔ .github/workflows/release-validate-tags.yml
 ```
 

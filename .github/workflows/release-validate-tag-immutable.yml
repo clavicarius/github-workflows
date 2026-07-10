@@ -77,7 +77,7 @@ jobs:
 
       - name: Run release validate tag immutable
         id: validate
-        uses: ./.github/actions/release-validate-tag-immutable
+        uses: ./actions/release-validate-tag-immutable
         with:
           tag: ${{ inputs.tag }}
           tag-created: ${{ inputs.tag-created }}

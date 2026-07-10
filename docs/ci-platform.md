@@ -564,7 +564,7 @@ scripts/validate-<purpose>.sh
 
 ## Tag 1 (Soll-Zielbild Kern)
 
-- `actions/` an Repository-Root (Migration von `.github/actions/`)
+- `actions/` an Repository-Root
 - Kategorie-basierte Workflow-Namen (`quality-`, `security-`, `release-`)
 - Semver-Versionierung mit Floating Major (`@v1`) und automatischen Alias-Tags
 - Explizite Trennung plattform-intern / Consumer-API

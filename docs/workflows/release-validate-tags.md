@@ -4,7 +4,7 @@ Datei:
 
 ```
 .github/workflows/release-validate-tags.yml
-.github/actions/release-validate-tags/action.yml
+actions/release-validate-tags/action.yml
 scripts/validate-version-tag.sh
 ```
 
@@ -159,7 +159,7 @@ steps:
   - uses: actions/checkout@v4
     with:
       fetch-depth: 0
-  - uses: clavicarius/ci-platform/.github/actions/release-validate-tags@v1
+  - uses: clavicarius/ci-platform/actions/release-validate-tags@v1
     with:
       tag: ${{ github.ref_name }}
       notify-user: ${{ github.actor }}

@@ -4,7 +4,7 @@ Datei:
 
 ```
 .github/workflows/release-validate-tag-immutable.yml
-.github/actions/release-validate-tag-immutable/action.yml
+actions/release-validate-tag-immutable/action.yml
 scripts/validate-tag-immutable.sh
 ```
 

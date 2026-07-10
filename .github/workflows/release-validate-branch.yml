@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run release validate branch
-        uses: ./.github/actions/release-validate-branch
+        uses: ./actions/release-validate-branch
         with:
           commit-sha: ${{ inputs.commit-sha != '' && inputs.commit-sha ||
             github.sha }}

@@ -23,31 +23,31 @@ Das Repository folgt einer zweistufigen Struktur:
 ```
 ci-platform/
 ├── .github/
-│   ├── workflows/
-│   │   ├── quality-base-set.yml
-│   │   ├── quality-link-check.yml
-│   │   ├── quality-markdown.yml
-│   │   ├── quality-yaml.yml
-│   │   ├── quality-lint.yml
-│   │   ├── security-codeql.yml
-│   │   ├── security-secret-scan.yml
-│   │   ├── security-dependency-review.yml
-│   │   ├── release-validate-tag-immutable.yml
-│   │   ├── release-validate-tags.yml
-│   │   ├── release-validate-branch.yml
-│   │   ├── release-github.yml
-│   │   └── maintenance-link-check.yml
-│   │
-│   └── actions/
-│       ├── quality-link-check/
-│       ├── quality-markdown/
-│       ├── quality-yaml/
-│       ├── quality-lint/
-│       ├── security-secret-scan/
-│       ├── security-dependency-review/
-│       ├── release-validate-tag-immutable/
-│       ├── release-validate-tags/
-│       └── release-validate-branch/
+│   └── workflows/
+│       ├── quality-base-set.yml
+│       ├── quality-link-check.yml
+│       ├── quality-markdown.yml
+│       ├── quality-yaml.yml
+│       ├── quality-lint.yml
+│       ├── security-codeql.yml
+│       ├── security-secret-scan.yml
+│       ├── security-dependency-review.yml
+│       ├── release-validate-tag-immutable.yml
+│       ├── release-validate-tags.yml
+│       ├── release-validate-branch.yml
+│       ├── release-github.yml
+│       └── maintenance-link-check.yml
+│
+├── actions/
+│   ├── quality-link-check/
+│   ├── quality-markdown/
+│   ├── quality-yaml/
+│   ├── quality-lint/
+│   ├── security-secret-scan/
+│   ├── security-dependency-review/
+│   ├── release-validate-tag-immutable/
+│   ├── release-validate-tags/
+│   └── release-validate-branch/
 │
 ├── docs/
 │   ├── workflows/
@@ -71,7 +71,7 @@ Verantwortungstrennung:
 | Schicht | Ort | Aufgabe |
 |---|---|---|
 | Workflow | `.github/workflows/<name>.yml` | Trigger, Permissions, Orchestrierung |
-| Composite Action | `.github/actions/<name>/action.yml` | Wiederverwendbare Implementierung |
+| Composite Action | `actions/<name>/action.yml` | Wiederverwendbare Implementierung |
 | Script | `scripts/*.sh` | Komplexe Shell-Logik |
 | Dokumentation | `docs/workflows/<name>.md` | Zweck, Integration, Verhalten |
 
@@ -111,7 +111,7 @@ Wichtig:
 
 ## Composite Actions
 
-`.github/actions/<name>/action.yml`
+`actions/<name>/action.yml`
 
 Enthält wiederverwendbare Implementierungen.
 
@@ -124,7 +124,7 @@ Aufgabe:
 Beispiel:
 
 ```
-.github/actions/quality-link-check/action.yml
+actions/quality-link-check/action.yml
   ↔ .github/workflows/quality-link-check.yml
 ```
 
@@ -282,7 +282,7 @@ Etabliertes Muster für Workflow + Composite Action:
 
 ```
 .github/workflows/quality-link-check.yml
-.github/actions/quality-link-check/action.yml
+actions/quality-link-check/action.yml
 ```
 
 Workflow (Orchestrierung):
@@ -302,7 +302,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: clavicarius/ci-platform/.github/actions/quality-link-check@v1
+      - uses: clavicarius/ci-platform/actions/quality-link-check@v1
 ```
 
 Composite Action (Implementierung):
@@ -324,7 +324,7 @@ Muster mit Script + Composite Action + Workflow:
 
 ```
 .github/workflows/release-validate-tags.yml
-.github/actions/release-validate-tags/action.yml
+actions/release-validate-tags/action.yml
 scripts/validate-version-tag.sh
 ```
 
@@ -393,7 +393,7 @@ Verbindliche Regeln stehen in `AGENTS.md`. Kurzfassung:
 - Composite Actions und Scripts für Implementierungslogik nutzen
 - keine projektspezifische Logik im zentralen Repository
 - keine unnötigen Permissions
-- interne CI mit `./.github/actions/...`, externe Nutzung mit `@v1`
+- interne CI mit `./actions/...`, externe Nutzung mit `@v1`
 
 Pflicht bei neuen Workflows:
 

@@ -4,7 +4,7 @@ Datei:
 
 ```
 .github/workflows/quality-yaml.yml
-.github/actions/quality-yaml/action.yml
+actions/quality-yaml/action.yml
 ```
 
 ---

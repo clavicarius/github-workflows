@@ -16,4 +16,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run quality link check
-        uses: clavicarius/ci-platform/.github/actions/quality-link-check@v1
+        uses: ./actions/quality-link-check

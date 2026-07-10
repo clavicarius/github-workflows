@@ -93,7 +93,7 @@ jobs:
 
       - name: Run release validate tags
         id: validate
-        uses: ./.github/actions/release-validate-tags
+        uses: ./actions/release-validate-tags
         with:
           tag: ${{ inputs.tag }}
           version-pattern: ${{ inputs.version-pattern }}

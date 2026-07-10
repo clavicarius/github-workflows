@@ -4,7 +4,7 @@ Datei:
 
 ```
 .github/workflows/quality-lint.yml
-.github/actions/quality-lint/action.yml
+actions/quality-lint/action.yml
 ```
 
 ---

@@ -72,13 +72,13 @@ Wiederverwendbare Einzelschritte werden als Composite Actions gekapselt.
 Ablage:
 
 ```bash
-.github/actions/<action-name>/action.yml
+actions/<action-name>/action.yml
 ```
 
 Beispiele:
 
 ```bash
-.github/actions/
+actions/
 
 quality-link-check/
 quality-markdown/
@@ -91,7 +91,7 @@ Beispiel:
 
 ```yaml
 - name: Check links
-  uses: clavicarius/ci-platform/.github/actions/quality-link-check@v1
+  uses: clavicarius/ci-platform/actions/quality-link-check@v1
 ```
 
 ---

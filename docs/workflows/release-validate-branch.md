@@ -4,7 +4,7 @@ Datei:
 
 ```
 .github/workflows/release-validate-branch.yml
-.github/actions/release-validate-branch/action.yml
+actions/release-validate-branch/action.yml
 scripts/validate-release-branch.sh
 ```
 

@@ -19,7 +19,9 @@ Standardmäßig gilt folgendes Versionierungsschema:
   größte existierende Version. Lücken sind erlaubt (z. B. `v1` → `v4` ist
   zulässig, solange `v4` > höchstes existierendes Tag).
 - Bereits veröffentlichte Tags dürfen nicht verändert (forciert neu gesetzt)
-  werden. Das Neusetzen bereits verwendeter Tag-Namen wird abgelehnt.
+  werden. Tag-Updates werden per
+  [release-validate-tag-immutable](workflows/release-validate-tag-immutable.md)
+  abgelehnt (`github.event.created == false`).
 
 ### Alternative: Semantic Versioning
 
@@ -47,6 +49,7 @@ Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
 
 - Diese Regel steht in `docs/RELEASING.md`.
 - Tag-Validierung: [release-validate-tags](workflows/release-validate-tags.md)
+- Tag-Immutabilität: [release-validate-tag-immutable](workflows/release-validate-tag-immutable.md)
 - Branch-Validierung: [release-validate-branch](workflows/release-validate-branch.md)
 - Release-Erstellung: [release-github](workflows/release-github.md)
 - Orchestrierung: [quality-base-set](workflows/quality-base-set.md)
@@ -91,17 +94,34 @@ Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
 ## Automatisierte Prüfung (Kurz)
 
 Über das [Quality Base Set](workflows/quality-base-set.md) laufen bei Tag-Pushes
-drei aufeinanderfolgende Schritte:
+vier aufeinanderfolgende Schritte:
 
-1. [release-validate-tags](workflows/release-validate-tags.md) — Format und
+1. [release-validate-tag-immutable](workflows/release-validate-tag-immutable.md) —
+   kein Update bestehender Tags (Force-Push)
+2. [release-validate-tags](workflows/release-validate-tags.md) — Format und
    Monotonie (bei Simple)
-2. [release-validate-branch](workflows/release-validate-branch.md) — Tag muss
+3. [release-validate-branch](workflows/release-validate-branch.md) — Tag muss
    auf `main` liegen
-3. [release-github](workflows/release-github.md) — GitHub Release erstellen
+4. [release-github](workflows/release-github.md) — GitHub Release erstellen
 
 Bei Verstößen schlägt der jeweilige Workflow fehl. Bei Tag-Formatfehlern wird
 zusätzlich ein Issue für den Autor erstellt. Das verwendete
 Versionierungsmuster ist konfigurierbar (siehe `version-pattern`-Input).
+
+---
+
+## Tag Protection (empfohlen)
+
+Die CI-Prüfung `release-validate-tag-immutable` erkennt Tag-Updates beim Push.
+Zusätzlich sollten Maintainer **Tag Protection Rules** in den
+GitHub-Repository-Einstellungen aktivieren:
+
+- Settings → Tags → Add rule (z. B. `v*`)
+- „Allow deletion" deaktivieren
+- „Allow update" / Force-Push von Tags verhindern (je nach verfügbaren Optionen)
+
+So wird ein Force-Push von Tags bereits auf GitHub-Seite blockiert, bevor die
+Action läuft.
 
 ---
 
@@ -118,6 +138,7 @@ Versionierungsmuster ist konfigurierbar (siehe `version-pattern`-Input).
   - `v1`, `v2`, `v10`
   - `v01` (ungültig), `v0` (ungültig)
   - Versuch, `v2` erneut zu setzen (abweisen)
+  - Versuch, `v5` auf anderen Commit zu verschieben (abweisen)
 
 - Testfälle (für Semver):
   - `v1.0.0`, `v1.2.3`

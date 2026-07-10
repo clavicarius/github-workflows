@@ -1,0 +1,90 @@
+name: Release Validate Tag Immutable
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: >
+          Tag to validate (e.g. v3). When empty, the tag is derived from
+          github.ref in the calling workflow context.
+        required: false
+        type: string
+        default: ''
+
+      tag-created:
+        description: >
+          From github.event.created on tag push. false rejects tag updates.
+        required: false
+        type: boolean
+        default: true
+
+      tag-before:
+        description: >
+          From github.event.before on tag push. Non-zero SHA means the ref
+          existed before this push.
+        required: false
+        type: string
+        default: ''
+
+      create-issue-on-failure:
+        description: Create or update a GitHub issue when validation fails
+        required: false
+        type: boolean
+        default: true
+
+      issue-label:
+        description: Label used for validation issue reports
+        required: false
+        type: string
+        default: 'invalid-tag'
+
+      issue-title:
+        description: Title for immutable tag violation issue reports
+        required: false
+        type: string
+        default: 'Immutable version tag report'
+
+      notify-user:
+        description: GitHub user to mention in issue reports
+        required: false
+        type: string
+        default: ''
+
+    outputs:
+      valid:
+        description: Whether the tag passed immutability validation
+        value: ${{ jobs.validate-immutable.outputs.valid }}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  validate-immutable:
+    name: Validate tag immutability
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      issues: write
+
+    outputs:
+      valid: ${{ steps.validate.outputs.valid }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run release validate tag immutable
+        id: validate
+        uses: ./.github/actions/release-validate-tag-immutable
+        with:
+          tag: ${{ inputs.tag }}
+          tag-created: ${{ inputs.tag-created }}
+          tag-before: ${{ inputs.tag-before }}
+          create-issue-on-failure: ${{ inputs.create-issue-on-failure }}
+          issue-label: ${{ inputs.issue-label }}
+          issue-title: ${{ inputs.issue-title }}
+          notify-user: >-
+            ${{ inputs.notify-user != '' && inputs.notify-user ||
+            github.actor }}

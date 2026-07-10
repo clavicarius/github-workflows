@@ -1,0 +1,68 @@
+name: Release Validate Tag Immutable
+description: Rejects tag updates (force-push or move) on push events
+author: claustrarius
+
+inputs:
+  tag:
+    description: Tag to validate. When empty, derived from GITHUB_REF.
+    required: false
+    default: ''
+
+  tag-created:
+    description: >
+      From github.event.created on tag push. false means the tag was updated.
+    required: false
+    default: ''
+
+  tag-before:
+    description: >
+      From github.event.before on tag push. Non-zero SHA means the ref existed.
+    required: false
+    default: ''
+
+  create-issue-on-failure:
+    description: Create or update a GitHub issue when validation fails
+    required: false
+    default: 'true'
+
+  issue-label:
+    description: Label used for validation issue reports
+    required: false
+    default: 'invalid-tag'
+
+  issue-title:
+    description: Title for immutable tag violation issue reports
+    required: false
+    default: 'Immutable version tag report'
+
+  notify-user:
+    description: GitHub user to mention in issue reports
+    required: false
+    default: ''
+
+outputs:
+  valid:
+    description: Whether the tag passed immutability validation
+    value: ${{ steps.validate.outputs.valid }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Validate tag immutability
+      id: validate
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        INPUT_TAG: ${{ inputs.tag }}
+        GITHUB_REF: ${{ github.ref }}
+        GITHUB_SHA: ${{ github.sha }}
+        TAG_CREATED: ${{ inputs.tag-created }}
+        TAG_BEFORE: ${{ inputs.tag-before }}
+        CREATE_ISSUE_ON_FAILURE: ${{ inputs.create-issue-on-failure }}
+        ISSUE_LABEL: ${{ inputs.issue-label }}
+        ISSUE_TITLE: ${{ inputs.issue-title }}
+        NOTIFY_USER: ${{ inputs.notify-user }}
+      run: |
+        set -euo pipefail
+        bash "${GITHUB_WORKSPACE}/scripts/validate-tag-immutable.sh"

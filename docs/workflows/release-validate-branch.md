@@ -59,7 +59,10 @@ Im Quality Base Set wird der Workflow nach `release-validate-tags` und vor
 `release-github` ausgeführt:
 
 ```
-release-validate-tags → release-validate-branch → release-github
+release-validate-tag-immutable
+  → release-validate-tags
+    → release-validate-branch
+      → release-github
 ```
 
 ### Direkter Aufruf

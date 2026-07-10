@@ -25,6 +25,7 @@ Jeder Workflow wird separat dokumentiert und beschreibt:
 | [Quality YAML](quality-yaml.md) | Prüft YAML-Dateien auf Syntax und Struktur |
 | [Release GitHub](release-github.md) | Erstellt GitHub Releases für bestehende Git Tags |
 | [Release Validate Tags](release-validate-tags.md) | Prüft Tag-Format und Monotonie |
+| [Release Validate Tag Immutable](release-validate-tag-immutable.md) | Lehnt Tag-Updates (Force-Push) ab |
 | [Release Validate Branch](release-validate-branch.md) | Prüft, ob Tag auf dem Release-Branch liegt |
 | [Security CodeQL](security-codeql.md) | Führt statische Sicherheitsanalysen durch |
 | [Security Dependency Review](security-dependency-review.md) | Prüft neue Dependencies in Pull Requests |

@@ -125,8 +125,12 @@ permissions:
 
 ### Über Quality Base Set (dieses Repository)
 
+Vorher läuft `release-validate-tag-immutable` (siehe
+[release-validate-tag-immutable.md](release-validate-tag-immutable.md)).
+
 ```yaml
 release-validate-tags:
+  needs: release-validate-tag-immutable
   uses: ./.github/workflows/release-validate-tags.yml
   with:
     tag: ${{ github.ref_name }}
@@ -179,6 +183,7 @@ Wenn das Tag ungültig ist:
 - [Release- und Tagging-Richtlinie](../RELEASING.md)
 - [Semantic Versioning](https://semver.org/)
 - [Quality Base Set](quality-base-set.md)
+- [Release Validate Tag Immutable](release-validate-tag-immutable.md)
 - [Release Validate Branch](release-validate-branch.md)
 
 ---

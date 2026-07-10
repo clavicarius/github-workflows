@@ -29,6 +29,7 @@ Zusätzlich wird bei Git Tags ein GitHub Release über `release-github.yml` erst
 | `security-secret-scan.yml` | Pull Request | Secret- und Leak-Prüfung |
 | `security-dependency-review.yml` | Pull Request | Dependency-Sicherheit im PR |
 | `quality-lint.yml` | Pull Request | Zusätzliche Linter nach Auto-Detect |
+| `release-validate-tag-immutable.yml` | Tag `v*` | Lehnt Tag-Updates ab |
 | `release-validate-tags.yml` | Tag `v*` | Tag-Format und Monotonie prüfen |
 | `release-validate-branch.yml` | Tag `v*` | Prüft, ob Tag auf `main` liegt |
 | `release-github.yml` | Tag `v*` | GitHub Release für neue Versionen |
@@ -133,6 +134,12 @@ Alle Checks grün -> Merge erlaubt
 git tag v1.0.0 (nur auf main!)
       |
       v
+release-validate-tag-immutable
+      |
+  OK? |
+      +-- Nein -> Fehler, kein Release
+      |
+      v
 release-validate-tags
       |
   OK? |
@@ -190,5 +197,6 @@ jobs:
 - [Security Secret Scan](security-secret-scan.md)
 - [Security Dependency Review](security-dependency-review.md)
 - [Release GitHub](release-github.md)
+- [Release Validate Tag Immutable](release-validate-tag-immutable.md)
 - [Release Validate Tags](release-validate-tags.md)
 - [Release Validate Branch](release-validate-branch.md)

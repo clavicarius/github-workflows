@@ -14,6 +14,7 @@ github-workflows/
 │   │   ├── security-codeql.yml
 │   │   ├── security-secret-scan.yml
 │   │   ├── security-dependency-review.yml
+│   │   ├── release-validate-tag-immutable.yml
 │   │   ├── release-validate-tags.yml
 │   │   ├── release-validate-branch.yml
 │   │   ├── release-github.yml
@@ -26,6 +27,7 @@ github-workflows/
 │       ├── quality-lint/
 │       ├── security-secret-scan/
 │       ├── security-dependency-review/
+│       ├── release-validate-tag-immutable/
 │       ├── release-validate-tags/
 │       └── release-validate-branch/
 │
@@ -38,6 +40,7 @@ github-workflows/
 │   └── RELEASING.md
 │
 ├── scripts/
+│   ├── validate-tag-immutable.sh
 │   ├── validate-version-tag.sh
 │   └── validate-release-branch.sh
 │
@@ -88,14 +91,17 @@ Implementierung des Workflows kapselt:
 scripts/validate-<purpose>.sh
 ```
 
-Beispiele: `validate-version-tag.sh`, `validate-release-branch.sh`
+Beispiele: `validate-tag-immutable.sh`, `validate-version-tag.sh`, `validate-release-branch.sh`
 
 ---
 
 ## Release-Pipeline (Quality Base Set)
 
 ```
-release-validate-tags → release-validate-branch → release-github
+release-validate-tag-immutable
+  → release-validate-tags
+    → release-validate-branch
+      → release-github
 ```
 
 Siehe [Quality Base Set](workflows/quality-base-set.md) und

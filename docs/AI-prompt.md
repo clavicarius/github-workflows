@@ -32,6 +32,7 @@ github-workflows/
 │   │   ├── security-codeql.yml
 │   │   ├── security-secret-scan.yml
 │   │   ├── security-dependency-review.yml
+│   │   ├── release-validate-tag-immutable.yml
 │   │   ├── release-validate-tags.yml
 │   │   ├── release-validate-branch.yml
 │   │   ├── release-github.yml
@@ -44,6 +45,7 @@ github-workflows/
 │       ├── quality-lint/
 │       ├── security-secret-scan/
 │       ├── security-dependency-review/
+│       ├── release-validate-tag-immutable/
 │       ├── release-validate-tags/
 │       └── release-validate-branch/
 │
@@ -56,6 +58,7 @@ github-workflows/
 │   └── AI-prompt.md
 │
 ├── scripts/
+│   ├── validate-tag-immutable.sh
 │   ├── validate-version-tag.sh
 │   └── validate-release-branch.sh
 │
@@ -136,6 +139,7 @@ Komplexe Shell-Logik, die von Composite Actions aufgerufen wird.
 Beispiele:
 
 ```
+scripts/validate-tag-immutable.sh
 scripts/validate-version-tag.sh
 scripts/validate-release-branch.sh
 ```
@@ -182,6 +186,7 @@ Dokumentiert werden:
 | `security-codeql` | security | [security-codeql.md](workflows/security-codeql.md) |
 | `security-secret-scan` | security | [security-secret-scan.md](workflows/security-secret-scan.md) |
 | `security-dependency-review` | security | [security-dependency-review.md](workflows/security-dependency-review.md) |
+| `release-validate-tag-immutable` | release | [release-validate-tag-immutable.md](workflows/release-validate-tag-immutable.md) |
 | `release-validate-tags` | release | [release-validate-tags.md](workflows/release-validate-tags.md) |
 | `release-validate-branch` | release | [release-validate-branch.md](workflows/release-validate-branch.md) |
 | `release-github` | release | [release-github.md](workflows/release-github.md) |
@@ -196,7 +201,10 @@ Dokumentiert werden:
 Internes Repository-Gate bei Tag-Pushes (`v*`):
 
 ```
-release-validate-tags → release-validate-branch → release-github
+release-validate-tag-immutable
+  → release-validate-tags
+    → release-validate-branch
+      → release-github
 ```
 
 Details:
@@ -251,6 +259,7 @@ Beispiele:
 ```
 quality-link-check
 quality-markdown
+release-validate-tag-immutable
 release-validate-tags
 release-validate-branch
 ```

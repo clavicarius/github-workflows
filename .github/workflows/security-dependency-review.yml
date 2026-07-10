@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run dependency review
-        uses: clavicarius/github-workflows/.github/actions/security-dependency-review@v1
+        uses: clavicarius/ci-platform/.github/actions/security-dependency-review@v1
         with:
           fail-on-severity: ${{ inputs.fail-on-severity }}
           fail-on-scopes: ${{ inputs.fail-on-scopes }}

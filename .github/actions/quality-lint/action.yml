@@ -1,6 +1,6 @@
 name: Quality Lint
 description: Runs code quality linters for PHP, JavaScript, Python, YAML, and Markdown
-author: claustrarius
+author: clavicarius
 
 inputs:
   auto-detect:

@@ -79,7 +79,7 @@ permissions:
 
 jobs:
   codeql:
-    uses: clavicarius/github-workflows/.github/workflows/security-codeql.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-codeql.yml@v1
 ```
 
 Explizite Sprachauswahl:
@@ -87,7 +87,7 @@ Explizite Sprachauswahl:
 ```yaml
 jobs:
   codeql:
-    uses: clavicarius/github-workflows/.github/workflows/security-codeql.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-codeql.yml@v1
     with:
       languages: '["csharp", "javascript"]'
 ```
@@ -97,7 +97,7 @@ Mit manuellem Build-Befehl:
 ```yaml
 jobs:
   codeql:
-    uses: clavicarius/github-workflows/.github/workflows/security-codeql.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-codeql.yml@v1
     with:
       languages: '["java"]'
       build-command: |
@@ -249,7 +249,7 @@ v1
 Verwendung:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/security-codeql.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/security-codeql.yml@v1
 ```
 
 ---

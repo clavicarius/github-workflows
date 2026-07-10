@@ -1,4 +1,4 @@
-# GitHub Workflows Repository
+# CI Platform
 
 Dieses Repository enthält zentral verwaltete
 **wiederverwendbare GitHub Actions Workflows** und **Composite Actions** für mehrere Projekte.
@@ -58,7 +58,7 @@ Ein Workflow kann von anderen Repositorys eingebunden werden:
 ```yaml
 jobs:
   link-check:
-    uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 [Details](docs/workflows/README.md)
@@ -91,7 +91,7 @@ Beispiel:
 
 ```yaml
 - name: Check links
-  uses: clavicarius/github-workflows/.github/actions/quality-link-check@v1
+  uses: clavicarius/ci-platform/.github/actions/quality-link-check@v1
 ```
 
 ---
@@ -112,7 +112,7 @@ on:
 
 jobs:
   link-check:
-    uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 Der Workflow wird dabei im Kontext des aufrufenden Repositorys ausgeführt.
@@ -200,13 +200,13 @@ Für produktive Projekte sollte nicht direkt ein Branch verwendet werden.
 Nicht empfohlen:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@main
+uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@main
 ```
 
 Empfohlen:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 Versionen werden über Git Tags verwaltet:
@@ -252,7 +252,7 @@ permissions:
 
 jobs:
   check:
-    uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 ---
@@ -336,13 +336,13 @@ Beispiel:
 Alt:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 Neu:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v2
+uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v2
 ```
 
 ---
@@ -404,6 +404,6 @@ Die Nutzung und Weitergabe erfolgt gemäß der im Repository hinterlegten Lizenz
 
 Verantwortlich für dieses Repository:
 
-**clavicarius** (https://github.com/clavicarius/github-workflows/)
+**clavicarius** (https://github.com/clavicarius/ci-platform/)
 
 Bei Fehlern oder Verbesserungsvorschlägen bitte ein Issue erstellen.

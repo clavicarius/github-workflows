@@ -1,7 +1,7 @@
 name: Release Validate Branch
 description: >
   Verifies that a release tag points to a commit on the release branch
-author: claustrarius
+author: clavicarius
 
 inputs:
   commit-sha:

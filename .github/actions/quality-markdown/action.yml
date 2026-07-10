@@ -1,6 +1,6 @@
 name: Quality Markdown
 description: Checks Markdown documentation quality with markdownlint and Lychee
-author: claustrarius
+author: clavicarius
 
 inputs:
   working-directory:

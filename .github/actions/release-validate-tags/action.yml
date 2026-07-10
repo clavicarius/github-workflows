@@ -1,6 +1,6 @@
 name: Release Validate Tags
 description: Validates version tag format and monotonicity for simple versioning
-author: claustrarius
+author: clavicarius
 
 inputs:
   tag:

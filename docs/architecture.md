@@ -3,7 +3,7 @@
 Das Repository folgt einer zweistufigen Architektur:
 
 ```
-github-workflows/
+ci-platform/
 ├── .github/
 │   ├── workflows/
 │   │   ├── quality-base-set.yml

@@ -95,7 +95,7 @@ release-validate-tag-immutable:
 ```yaml
 jobs:
   validate-immutable:
-    uses: clavicarius/github-workflows/.github/workflows/release-validate-tag-immutable.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/release-validate-tag-immutable.yml@v1
     with:
       tag: ${{ github.ref_name }}
       tag-created: ${{ github.event.created }}

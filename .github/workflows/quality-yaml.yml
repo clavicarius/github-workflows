@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run YAML quality checks
-        uses: clavicarius/github-workflows/.github/actions/quality-yaml@v1
+        uses: clavicarius/ci-platform/.github/actions/quality-yaml@v1
         with:
           working-directory: ${{ inputs.working-directory }}
           yaml-glob: ${{ inputs.yaml-glob }}

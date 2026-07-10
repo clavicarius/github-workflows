@@ -1,6 +1,6 @@
 name: Quality YAML
 description: Validates YAML syntax and structure with yamllint
-author: claustrarius
+author: clavicarius
 
 inputs:
   working-directory:

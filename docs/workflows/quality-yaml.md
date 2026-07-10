@@ -95,7 +95,7 @@ permissions:
 
 jobs:
   yaml:
-    uses: clavicarius/github-workflows/.github/workflows/quality-yaml.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-yaml.yml@v1
 ```
 
 ### Nur GitHub Actions Workflows
@@ -103,7 +103,7 @@ jobs:
 ```yaml
 jobs:
   yaml:
-    uses: clavicarius/github-workflows/.github/workflows/quality-yaml.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-yaml.yml@v1
     with:
       scan-profile: workflows
 ```
@@ -113,7 +113,7 @@ jobs:
 ```yaml
 jobs:
   yaml:
-    uses: clavicarius/github-workflows/.github/workflows/quality-yaml.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-yaml.yml@v1
     with:
       scan-profile: compose
 ```
@@ -123,7 +123,7 @@ jobs:
 ```yaml
 jobs:
   yaml:
-    uses: clavicarius/github-workflows/.github/workflows/quality-yaml.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-yaml.yml@v1
     with:
       scan-profile: kubernetes
       working-directory: deploy
@@ -172,7 +172,7 @@ v1
 Verwendung:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-yaml.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/quality-yaml.yml@v1
 ```
 
 ---

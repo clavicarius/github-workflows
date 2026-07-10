@@ -6,7 +6,7 @@ Workflows und Composite Actions.
 Repository:
 
 ```
-clavicarius/github-workflows
+clavicarius/ci-platform
 ```
 
 Ziel:
@@ -21,7 +21,7 @@ eingebunden werden.
 Das Repository folgt einer zweistufigen Struktur:
 
 ```
-github-workflows/
+ci-platform/
 ├── .github/
 │   ├── workflows/
 │   │   ├── quality-base-set.yml
@@ -99,7 +99,7 @@ Beispiel:
 ```yaml
 jobs:
   check:
-    uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 Wichtig:
@@ -302,7 +302,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: clavicarius/github-workflows/.github/actions/quality-link-check@v1
+      - uses: clavicarius/ci-platform/.github/actions/quality-link-check@v1
 ```
 
 Composite Action (Implementierung):
@@ -344,13 +344,13 @@ Produktive Projekte sollen nicht auf Branches zeigen.
 Nicht:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@main
+uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@main
 ```
 
 Sondern:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-link-check.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
 Versionierung über Git Tags:

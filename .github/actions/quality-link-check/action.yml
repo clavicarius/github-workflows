@@ -1,6 +1,6 @@
 name: Quality Link Check
 description: Checks repository links and manages a GitHub issue report
-author: claustrarius
+author: clavicarius
 
 inputs:
   issue-title:

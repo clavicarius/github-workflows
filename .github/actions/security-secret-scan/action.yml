@@ -1,6 +1,6 @@
 name: Security Secret Scan
 description: Scans repositories for leaked secrets using Gitleaks and GitHub Secret Scanning alerts
-author: claustrarius
+author: clavicarius
 
 inputs:
   gitleaks-config:

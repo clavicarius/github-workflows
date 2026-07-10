@@ -99,7 +99,7 @@ permissions:
 
 jobs:
   markdown:
-    uses: clavicarius/github-workflows/.github/workflows/quality-markdown.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-markdown.yml@v1
 ```
 
 ### Nur Dokumentationsverzeichnis
@@ -107,7 +107,7 @@ jobs:
 ```yaml
 jobs:
   markdown:
-    uses: clavicarius/github-workflows/.github/workflows/quality-markdown.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-markdown.yml@v1
     with:
       working-directory: docs
 ```
@@ -128,7 +128,7 @@ permissions:
 
 jobs:
   markdown:
-    uses: clavicarius/github-workflows/.github/workflows/quality-markdown.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-markdown.yml@v1
     with:
       fail-on-link-errors: false
       create-link-issue: true
@@ -139,7 +139,7 @@ jobs:
 ```yaml
 jobs:
   markdown:
-    uses: clavicarius/github-workflows/.github/workflows/quality-markdown.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/quality-markdown.yml@v1
     with:
       enable-link-check: false
 ```
@@ -199,7 +199,7 @@ v1
 Verwendung:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/quality-markdown.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/quality-markdown.yml@v1
 ```
 
 ---

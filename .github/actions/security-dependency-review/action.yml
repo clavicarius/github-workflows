@@ -1,6 +1,6 @@
 name: Security Dependency Review
 description: Reviews pull request dependency changes for known security vulnerabilities
-author: claustrarius
+author: clavicarius
 
 inputs:
   fail-on-severity:

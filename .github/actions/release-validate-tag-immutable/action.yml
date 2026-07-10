@@ -1,6 +1,6 @@
 name: Release Validate Tag Immutable
 description: Rejects tag updates (force-push or move) on push events
-author: claustrarius
+author: clavicarius
 
 inputs:
   tag:

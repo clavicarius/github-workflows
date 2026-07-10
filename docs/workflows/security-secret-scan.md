@@ -106,7 +106,7 @@ permissions:
 
 jobs:
   secret-scan:
-    uses: clavicarius/github-workflows/.github/workflows/security-secret-scan.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-secret-scan.yml@v1
 ```
 
 ### Vollständiger Repository-Scan
@@ -114,7 +114,7 @@ jobs:
 ```yaml
 jobs:
   secret-scan:
-    uses: clavicarius/github-workflows/.github/workflows/security-secret-scan.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-secret-scan.yml@v1
     with:
       scan-mode: full
 ```
@@ -124,7 +124,7 @@ jobs:
 ```yaml
 jobs:
   secret-scan:
-    uses: clavicarius/github-workflows/.github/workflows/security-secret-scan.yml@v1
+    uses: clavicarius/ci-platform/.github/workflows/security-secret-scan.yml@v1
     with:
       check-github-alerts: false
 ```
@@ -178,7 +178,7 @@ v1
 Verwendung:
 
 ```yaml
-uses: clavicarius/github-workflows/.github/workflows/security-secret-scan.yml@v1
+uses: clavicarius/ci-platform/.github/workflows/security-secret-scan.yml@v1
 ```
 
 ---

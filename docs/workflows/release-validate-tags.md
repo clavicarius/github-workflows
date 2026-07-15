@@ -134,6 +134,7 @@ release-validate-tags:
   uses: ./.github/workflows/release-validate-tags.yml
   with:
     tag: ${{ github.ref_name }}
+    version-pattern: semver
 ```
 
 ### Als wiederverwendbarer Workflow

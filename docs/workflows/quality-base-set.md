@@ -30,7 +30,7 @@ Zusätzlich wird bei Git Tags ein GitHub Release über `release-github.yml` erst
 | `security-dependency-review.yml` | Pull Request | Dependency-Sicherheit im PR |
 | `quality-lint.yml` | Pull Request | Zusätzliche Linter nach Auto-Detect |
 | `release-validate-tag-immutable.yml` | Tag `v*` | Lehnt Tag-Updates ab |
-| `release-validate-tags.yml` | Tag `v*` | Tag-Format und Monotonie prüfen |
+| `release-validate-tags.yml` | Tag `v*` | SemVer-Tag-Format prüfen |
 | `release-validate-branch.yml` | Tag `v*` | Prüft, ob Tag auf `main` liegt |
 | `release-github.yml` | Tag `v*` | GitHub Release für neue Versionen |
 
@@ -87,6 +87,14 @@ weil diese bereits von `quality-yaml` und `quality-markdown` übernommen werden:
 auto-detect: true
 skip-yaml: true
 skip-markdown: true
+```
+
+### Release-Tag-Validierung
+
+Im Base-Set wird für Release-Tags explizit das **SemVer-Muster** verwendet:
+
+```yaml
+version-pattern: semver
 ```
 
 ---

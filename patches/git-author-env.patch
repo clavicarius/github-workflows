@@ -147,11 +147,11 @@ index 0000000..7b2049a
 +
 +- loads `.git-author` before git operations
 +- writes plain commit messages only — **no git trailers** (`Co-authored-by`, `Signed-off-by`, tool attribution, etc.)
-diff --git a/helperscripts/git-author-env.sh b/helperscripts/git-author-env.sh
+diff --git a/scripts/git-author-env.sh b/scripts/git-author-env.sh
 new file mode 100644
 index 0000000..85501d8
 --- /dev/null
-+++ b/helperscripts/git-author-env.sh
++++ b/scripts/git-author-env.sh
 @@ -0,0 +1,27 @@
 +#!/usr/bin/env bash
 +# Loads GIT_AUTHOR_* and GIT_COMMITTER_* from .git-author into the current shell.

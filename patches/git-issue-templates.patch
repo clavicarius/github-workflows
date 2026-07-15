@@ -1,0 +1,267 @@
+diff --git a/.github/ISSUE_TEMPLATE/bug_report.yml b/.github/ISSUE_TEMPLATE/bug_report.yml
+new file mode 100644
+index 0000000..da63dd8
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/bug_report.yml
+@@ -0,0 +1,97 @@
++name: 🐛 Bug Report
++description: Etwas funktioniert nicht wie erwartet
++title: "[Bug]: "
++labels: ["bug"]
++assignees: []
++body:
++  - type: markdown
++    attributes:
++      value: |
++        Danke für deinen Bug Report! Bitte prüfe vorher, ob das Problem [bereits gemeldet wurde](./issues?q=is%3Aissue+label%3Abug).
++
++  - type: textarea
++    id: description
++    attributes:
++      label: Beschreibung
++      description: Was ist passiert? Was hast du erwartet?
++      placeholder: Kurze, klare Beschreibung des Problems
++    validations:
++      required: true
++
++  - type: textarea
++    id: steps
++    attributes:
++      label: Schritte zur Reproduktion
++      description: Wie kann man den Bug nachstellen?
++      placeholder: |
++        1. Gehe zu '...'
++        2. Klicke auf '...'
++        3. Siehe Fehler
++    validations:
++      required: true
++
++  - type: textarea
++    id: expected
++    attributes:
++      label: Erwartetes Verhalten
++    validations:
++      required: true
++
++  - type: textarea
++    id: actual
++    attributes:
++      label: Tatsächliches Verhalten
++    validations:
++      required: true
++
++  - type: dropdown
++    id: severity
++    attributes:
++      label: Schweregrad
++      options:
++        - Kritisch (System down / Datenverlust)
++        - Hoch (Hauptfunktion betroffen)
++        - Mittel (Workaround vorhanden)
++        - Niedrig (kosmetisch / Randfall)
++    validations:
++      required: true
++
++  - type: input
++    id: version
++    attributes:
++      label: Version
++      description: Welche Version ist betroffen?
++      placeholder: "z.B. v1.2.3"
++    validations:
++      required: true
++
++  - type: textarea
++    id: environment
++    attributes:
++      label: Umgebung
++      description: OS, Browser, Runtime, etc.
++      placeholder: |
++        - OS: Windows 11 / macOS 14 / Ubuntu 22.04
++        - Browser: Chrome 120
++        - Node.js: 20.x
++    validations:
++      required: false
++
++  - type: textarea
++    id: logs
++    attributes:
++      label: Logs / Screenshots
++      description: Relevante Fehlermeldungen oder Screenshots
++      render: shell
++    validations:
++      required: false
++
++  - type: checkboxes
++    id: checklist
++    attributes:
++      label: Checkliste
++      options:
++        - label: Ich habe nach bestehenden Issues gesucht
++          required: true
++        - label: Ich habe die neueste Version getestet
++          required: true
+diff --git a/.github/ISSUE_TEMPLATE/config.yml b/.github/ISSUE_TEMPLATE/config.yml
+new file mode 100644
+index 0000000..43ff84b
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/config.yml
+@@ -0,0 +1,13 @@
++blank_issues_enabled: false
++contact_links:
++  - name: 💬 Fragen & Diskussion
++    url: ./discussions
++    about: Für allgemeine Fragen nutze bitte GitHub Discussions statt Issues.
++
++  - name: 🔒 Sicherheitslücke melden
++    url: ./security/advisories/new
++    about: Bitte melde Sicherheitsprobleme vertraulich über Security Advisories — nicht als öffentliches Issue.
++
++  - name: 📖 Dokumentation
++    url: ./wiki
++    about: Schau zuerst in die Dokumentation / Wiki.
+diff --git a/.github/ISSUE_TEMPLATE/documentation.yml b/.github/ISSUE_TEMPLATE/documentation.yml
+new file mode 100644
+index 0000000..2575fa6
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/documentation.yml
+@@ -0,0 +1,44 @@
++name: 📖 Dokumentation
++description: Fehler, Lücken oder Verbesserungen in der Doku melden
++title: "[Docs]: "
++labels: ["documentation", "triage"]
++assignees: []
++body:
++  - type: textarea
++    id: location
++    attributes:
++      label: Betroffene Stelle
++      description: URL, Dateipfad oder Abschnitt
++      placeholder: "z.B. README.md, Abschnitt 'Installation', Zeile 42"
++    validations:
++      required: true
++
++  - type: dropdown
++    id: type
++    attributes:
++      label: Art des Problems
++      options:
++        - Tippfehler / Grammatik
++        - Veraltete Information
++        - Fehlende Erklärung
++        - Falsches Beispiel
++        - Fehlende Übersetzung
++        - Anderes
++    validations:
++      required: true
++
++  - type: textarea
++    id: description
++    attributes:
++      label: Beschreibung
++      description: Was ist falsch oder fehlt?
++    validations:
++      required: true
++
++  - type: textarea
++    id: suggestion
++    attributes:
++      label: Vorschlag zur Verbesserung
++      description: Wie sollte es lauten?
++    validations:
++      required: false
+diff --git a/.github/ISSUE_TEMPLATE/feature_request.yml b/.github/ISSUE_TEMPLATE/feature_request.yml
+new file mode 100644
+index 0000000..de10d34
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/feature_request.yml
+@@ -0,0 +1,56 @@
++name: ✨ Feature Request
++description: Neue Funktion oder Verbesserung vorschlagen
++title: "[Feature]: "
++labels: ["enhancement", "triage"]
++assignees: []
++body:
++  - type: markdown
++    attributes:
++      value: |
++        Beschreibe dein Feature so konkret wie möglich. Je mehr Kontext, desto besser können wir es bewerten.
++
++  - type: textarea
++    id: problem
++    attributes:
++      label: Problem / Motivation
++      description: Welches Problem soll gelöst werden? Warum ist das wichtig?
++      placeholder: "Als Nutzer möchte ich ..., damit ..."
++    validations:
++      required: true
++
++  - type: textarea
++    id: solution
++    attributes:
++      label: Vorgeschlagene Lösung
++      description: Wie stellst du dir die Umsetzung vor?
++    validations:
++      required: true
++
++  - type: textarea
++    id: alternatives
++    attributes:
++      label: Alternativen
++      description: Hast du andere Lösungsansätze in Betracht gezogen?
++    validations:
++      required: false
++
++  - type: dropdown
++    id: priority
++    attributes:
++      label: Priorität (aus Nutzersicht)
++      options:
++        - Must-have
++        - Nice-to-have
++        - Idee für die Zukunft
++    validations:
++      required: true
++
++  - type: checkboxes
++    id: checklist
++    attributes:
++      label: Checkliste
++      options:
++        - label: Ich habe nach ähnlichen Feature-Requests gesucht
++          required: true
++        - label: Dieses Feature passt zum Scope des Projekts
++          required: false
+diff --git a/.github/ISSUE_TEMPLATE/question.yml b/.github/ISSUE_TEMPLATE/question.yml
+new file mode 100644
+index 0000000..825f909
+--- /dev/null
++++ b/.github/ISSUE_TEMPLATE/question.yml
+@@ -0,0 +1,27 @@
++name: ❓ Frage
++description: Allgemeine Frage zum Projekt
++title: "[Question]: "
++labels: ["question"]
++assignees: []
++body:
++  - type: markdown
++    attributes:
++      value: |
++        ⚠️ **Hinweis:** Für allgemeine Fragen empfehlen wir [GitHub Discussions](./discussions).
++        Issues sind primär für Bugs und Feature Requests gedacht.
++
++  - type: textarea
++    id: question
++    attributes:
++      label: Deine Frage
++      placeholder: Was möchtest du wissen?
++    validations:
++      required: true
++
++  - type: textarea
++    id: context
++    attributes:
++      label: Kontext
++      description: Was hast du bereits versucht? Welche Version nutzt du?
++    validations:
++      required: false

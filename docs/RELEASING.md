@@ -4,50 +4,52 @@
 
 Dieses Dokument legt die Konvention für Versions-Tags im Repository fest und
 beschreibt den Prozess zum Erstellen gültiger Tags sowie die automatische
-Prüfung per GitHub Action.
+Versionierung per GitHub Action.
 
-## Regeln (Standard: Simple Major Versioning)
+## Regeln (Standard: Semantic Versioning + Moving Major Alias)
 
-### Standard-Muster (Simple)
+### Standard-Muster (SemVer)
 
 Standardmäßig gilt folgendes Versionierungsschema:
 
-- Format: `vNNN` (Regex: `^v[1-9][0-9]*$`)
-  - Keine führenden Nullen (z. B. `v01` ist ungültig).
-  - Erste zulässige Version ist `v1` (`v0` ist nicht erlaubt).
-- Monoton steigend: Neue Tags müssen numerisch größer sein als die aktuell
-  größte existierende Version. Lücken sind erlaubt (z. B. `v1` → `v4` ist
-  zulässig, solange `v4` > höchstes existierendes Tag).
-- Bereits veröffentlichte Tags dürfen nicht verändert (forciert neu gesetzt)
-  werden. Tag-Updates werden per
-  [release-validate-tag-immutable](workflows/release-validate-tag-immutable.md)
-  abgelehnt (`github.event.created == false`).
+- **Release-Tag (immutable):** `v<major>.<minor>.<patch>`  
+  Regex: `^v[0-9]+\.[0-9]+\.[0-9]+$`
+- Nur diese Tags werden für die automatische Versionsberechnung berücksichtigt.
+- Initialversion ist `v0.1.0`, falls noch kein passender Tag existiert.
+- Neue Versionen werden automatisch aus dem höchsten vorhandenen SemVer-Tag
+  berechnet (aktuell: **Patch-Increment**).
 
-### Alternative: Semantic Versioning
+### Moving Major Alias (`vN`)
 
-Repositories können auf **Semantic Versioning** (semver) wechseln, z. B.
-`v1.2.3-rc.1+build`. Dies wird durch `version-pattern: 'semver'` konfiguriert.
-Bei semver wird nur das Regex-Format geprüft, keine Monotonie.
+Zusätzlich wird pro Major-Linie ein beweglicher Alias gepflegt:
 
-Weitere Informationen: [semver.org](https://semver.org/)
+- Format: `v<major>` (z. B. `v0`, `v1`, `v2`)
+- `vN` zeigt immer auf denselben Commit wie der neueste veröffentlichte
+  `vN.x.y`-Tag.
+- Beispiel: Wird `v2.4.9` veröffentlicht, zeigt `v2` anschließend auf exakt
+  diesen Commit.
+- Der `vN`-Alias ist **absichtlich mutable** (Force-Update durch CI), da er als
+  Zeiger auf den neuesten Stand der Major-Linie dient.
 
-### Custom Patterns
+### Immutabilität
 
-Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
+- `vX.Y.Z`-Release-Tags sind **immutable** und dürfen nicht verschoben werden.
+- `vN`-Alias-Tags sind **mutable by design** und werden von der CI aktualisiert.
 
 ---
 
 ## Verantwortung
 
-- Repository-Maintainer(s) sind verantwortlich für die Freigabe neuer Tags.
-- Bei Verstößen gegen die Tagging-Richtlinie wird **der PR-Autor / Trigger-Auslöser**
-  automatisch über ein GitHub Issue benachrichtigt.
+- Repository-Maintainer(s) sind verantwortlich für Freigaben und Releases.
+- CI automatisiert die Tag-Erzeugung und Alias-Aktualisierung.
+- Bei Verstößen gegen die Richtlinie schlägt der Workflow fehl.
 
 ---
 
 ## Ort der Dokumentation
 
 - Diese Regel steht in `docs/RELEASING.md`.
+- Versioning-Verhalten (detailliert): `docs/VERSIONING.md`
 - Tag-Validierung: [release-validate-tags](workflows/release-validate-tags.md)
 - Tag-Immutabilität: [release-validate-tag-immutable](workflows/release-validate-tag-immutable.md)
 - Branch-Validierung: [release-validate-branch](workflows/release-validate-branch.md)
@@ -56,98 +58,97 @@ Für spezialisierte Anforderungen können eigene Regex-Muster verwendet werden.
 
 ---
 
-## Wie man ein gültiges Tag setzt (Kurz-Anleitung)
+## Release-Prozess (Kurz-Anleitung)
 
-### Mit Simple Versioning (Standard)
+### Automatisch über CI (Standard)
 
-1. Lokales Commit erstellen und pushen.
-2. Lokales Tag erstellen: `git tag vN` (z. B. `git tag v5`) — wähle N so,
-   dass N > höchste existierende `vNNN`.
-3. Tag pushen: `git push origin v5`
-4. Wenn ein Release erstellt wird, wähle dasselbe Tag (`v5`).
-5. Die GitHub Action prüft das Tag automatisch; bei Fehlern schlägt der
-   Release-/Tag-Workflow fehl und der Autor wird benachrichtigt.
+1. Commit nach `main` pushen.
+2. Workflow berechnet den nächsten `vX.Y.Z`-Tag.
+3. Workflow erstellt/pusht den neuen `vX.Y.Z`-Tag.
+4. Workflow aktualisiert den zugehörigen `vN`-Alias auf denselben Commit.
+5. Bei `pull_request` läuft nur Dry-Run (keine Tag-Pushes).
 
-### Mit Semantic Versioning
+### Manuell (nur Ausnahmefall)
 
-1. Lokales Commit erstellen und pushen.
-2. Lokales Tag erstellen: `git tag v1.2.3` oder mit Prerelease: `git tag v2.0.0-rc.1`
-3. Tag pushen: `git push origin v1.2.3`
-4. Die GitHub Action prüft das Tag automatisch gegen das semver-Muster.
+Falls manuell getaggt wird, gilt:
+
+1. SemVer-Release-Tag setzen (z. B. `git tag v1.2.3`).
+2. Tag pushen (`git push origin v1.2.3`).
+3. Optional/bei Bedarf `v1` auf denselben Commit setzen (normalerweise CI).
 
 ---
 
 ## Beispiele
 
-### Simple Major Versioning
+### Release-Tags (`vX.Y.Z`)
 
-- Gültig: `v1`, `v2`, `v10`, `v123`
-- Ungültig: `v0`, `v01`, `v001`, `v1.0`, `version1`, `v1a`
+- Gültig: `v0.1.0`, `v1.2.3`, `v10.0.7`
+- Ungültig: `v1`, `v1.0`, `v01.2.3`, `version1.2.3`
 
-### Semantic Versioning
+### Moving Major Alias (`vN`)
 
-- Gültig: `v1.0.0`, `v2.1.3-alpha`, `v1.0.0+build.1`
-- Ungültig: `v1.0`, `v1`, `v1.0.0-`, `version1.0.0`
+- Gültig: `v0`, `v1`, `v12`
+- Ungültig: `v01`, `v1.0`, `v1a`
+
+### Verhalten
+
+- Neuer Tag: `v2.4.9`
+- Danach muss `v2` auf denselben Commit zeigen wie `v2.4.9`.
 
 ---
 
 ## Automatisierte Prüfung (Kurz)
 
-Über das [Quality Base Set](workflows/quality-base-set.md) laufen bei Tag-Pushes
-vier aufeinanderfolgende Schritte:
+Bei Versioning-/Release-Läufen werden u. a. diese Aspekte geprüft:
 
-1. [release-validate-tag-immutable](workflows/release-validate-tag-immutable.md) —
-   kein Update bestehender Tags (Force-Push)
-2. [release-validate-tags](workflows/release-validate-tags.md) — Format und
-   Monotonie (bei Simple)
-3. [release-validate-branch](workflows/release-validate-branch.md) — Tag muss
-   auf `main` liegen
-4. [release-github](workflows/release-github.md) — GitHub Release erstellen
+1. SemVer-Format für Release-Tags (`vX.Y.Z`)
+2. Branch-/Workflow-Regeln
+3. Immutabilität für Release-Tags
+4. Korrekte Pflege des `vN`-Major-Alias
 
-Bei Verstößen schlägt der jeweilige Workflow fehl. Bei Tag-Formatfehlern wird
-zusätzlich ein Issue für den Autor erstellt. Das verwendete
-Versionierungsmuster ist konfigurierbar (siehe `version-pattern`-Input).
+Bei Verstößen schlägt der jeweilige Workflow fehl.
 
 ---
 
 ## Tag Protection (empfohlen)
 
-Die CI-Prüfung `release-validate-tag-immutable` erkennt Tag-Updates beim Push.
-Zusätzlich sollten Maintainer **Tag Protection Rules** in den
-GitHub-Repository-Einstellungen aktivieren:
+Da `vN` absichtlich beweglich ist, sollten Tag-Regeln differenziert gesetzt
+werden:
 
-- Settings → Tags → Add rule (z. B. `v*`)
-- „Allow deletion" deaktivieren
-- „Allow update" / Force-Push von Tags verhindern (je nach verfügbaren Optionen)
+- Für **Release-Tags** (`v*.*.*`): Updates/Force-Push verhindern.
+- Für **Major-Alias-Tags** (`v[0-9]+`): Update durch CI zulassen (oder
+  entsprechender CI-Actor/Token erlauben).
 
-So wird ein Force-Push von Tags bereits auf GitHub-Seite blockiert, bevor die
-Action läuft.
+So bleiben Release-Tags geschützt, während `vN` weiterhin korrekt auf den
+neuesten Major-Stand zeigen kann.
 
 ---
 
 ## Migration vorhandener Tags
 
-- Bestehende nicht-konforme Tags werden nicht automatisch umbenannt oder
-  gelöscht. Eine separate Migration kann bei Bedarf geplant werden.
+- Nicht-konforme Alt-Tags werden nicht automatisch umbenannt oder gelöscht.
+- Eine Migration kann bei Bedarf separat geplant werden.
+- Bei Umstellung von „Simple Major“ auf SemVer sollten bestehende Prozesse und
+  Tag-Protection-Regeln auf `vX.Y.Z` + `vN`-Alias angepasst werden.
 
 ---
 
 ## Tests
 
-- Testfälle (lokal/test-Repo) sollten u. a. enthalten (für Simple):
-  - `v1`, `v2`, `v10`
-  - `v01` (ungültig), `v0` (ungültig)
-  - Versuch, `v2` erneut zu setzen (abweisen)
-  - Versuch, `v5` auf anderen Commit zu verschieben (abweisen)
+Empfohlene Testfälle:
 
-- Testfälle (für Semver):
-  - `v1.0.0`, `v1.2.3`
-  - `v2.0.0-rc.1`, `v1.0.0+build`
-  - `v1.0` (ungültig), `v1` (ungültig)
+- Release-Tags:
+  - `v0.1.0`, `v0.1.1`, `v1.0.0`
+  - `v1`, `v1.0` (ungültig als Release-Tag)
+- Alias:
+  - nach `v1.2.3` zeigt `v1` auf denselben Commit
+  - nach `v1.2.4` wird `v1` auf den neuen Commit weiterbewegt
+- PR-Dry-Run:
+  - Version wird berechnet, aber keine Tags werden gepusht.
 
 ---
 
 ## Kontakt / Fragen
 
-- Bei Fragen oder Problemen mit Tagging-Validierung wird automatisch ein Issue erstellt und der Autor benachrichtigt.
-- Zur allgemeinen Diskussion: Issue oder Pull Request im Repository öffnen.
+- Bei Fragen oder Problemen mit Versionierung/Tagging: Issue oder Pull Request im Repository öffnen.
+- Für Details zur Berechnungslogik siehe `docs/VERSIONING.md`.

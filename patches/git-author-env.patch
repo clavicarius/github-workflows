@@ -1,0 +1,182 @@
+diff --git a/.cursor/rules/git-commit-author.mdc b/.cursor/rules/git-commit-author.mdc
+new file mode 100644
+index 0000000..6ebefb9
+--- /dev/null
++++ b/.cursor/rules/git-commit-author.mdc
+@@ -0,0 +1,32 @@
++---
++description: Git identity, commit messages, and no trailers for agent commits
++alwaysApply: true
++---
++
++# Git commit identity
++
++Before `git commit`, `git rebase`, or other operations that record author/committer:
++
++1. Read `.git-author` in the repository root (gitignored, per-developer).
++2. If missing: tell the user to run `cp .git-author.example .git-author` and fill in their values. Do not commit with a guessed identity.
++3. Set environment variables from that file — never run `git config` to persist identity:
++   - `GIT_AUTHOR_NAME`, `GIT_AUTHOR_EMAIL`
++   - `GIT_COMMITTER_NAME`, `GIT_COMMITTER_EMAIL` (fallback to author if empty)
++4. On Windows/PowerShell, set `$env:GIT_AUTHOR_NAME` etc. before git commands.
++5. On bash: `source ./scripts/git-author-env.sh` before git commands.
++
++To fix author on existing commits:
++
++```bash
++source ./scripts/git-author-env.sh
++git rebase HEAD~N --exec "git commit --amend --no-edit --reset-author"
++```
++
++Each developer maintains their own `.git-author`. Only `.git-author.example` is tracked.
++
++# Commit messages
++
++- Subject + optional body only. Plain text, no metadata footers.
++- **Never add git trailers** — not in the message body, not via `git commit --trailer`.
++- Forbidden examples: `Co-authored-by:`, `Signed-off-by:`, `Made-with:`, `Generated-by:`, `Reviewed-by:`, or any `Key: value` trailer line.
++- No AI/tool attribution in commits.
+diff --git a/.git-author.example b/.git-author.example
+new file mode 100644
+index 0000000..f0101a9
+--- /dev/null
++++ b/.git-author.example
+@@ -0,0 +1,13 @@
++# Local git identity for commits (especially agent-created commits).
++# Copy to .git-author in the repository root and customize.
++#
++# Example:
++# GIT_AUTHOR_NAME=Your Name
++# GIT_AUTHOR_EMAIL=you@example.com
++# GIT_COMMITTER_NAME=Your Name
++# GIT_COMMITTER_EMAIL=you@example.com
++
++GIT_AUTHOR_NAME=
++GIT_AUTHOR_EMAIL=
++GIT_COMMITTER_NAME=
++GIT_COMMITTER_EMAIL=
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..7b569b4
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,26 @@
++# OS
++.DS_Store
++Thumbs.db
++
++# Environment
++.env*
++!.env.common.example
++!.env.example
++.git-author
++!.git-author.example
++
++# Database volume
++mysql_data/
++
++# Logs
++logs/
++
++# Composer
++vendor/
++
++# IDE
++.vscode/
++.idea/
++
++# Docker
++*.log
+diff --git a/docs/git-author.md b/docs/git-author.md
+new file mode 100644
+index 0000000..7b2049a
+--- /dev/null
++++ b/docs/git-author.md
+@@ -0,0 +1,54 @@
++# Git author for agent commits
++
++Agent-created commits should use the correct author and committer — not the machine login.
++
++## Setup (once per developer)
++
++```bash
++cp .git-author.example .git-author
++```
++
++Edit `.git-author` with your name and email:
++
++```bash
++GIT_AUTHOR_NAME=Your Name
++GIT_AUTHOR_EMAIL=you@example.com
++GIT_COMMITTER_NAME=Your Name
++GIT_COMMITTER_EMAIL=you@example.com
++```
++
++`.git-author` is gitignored. Each developer keeps their own copy.
++
++## Usage
++
++### Bash / Git Bash
++
++```bash
++source ./helperscripts/git-author-env.sh
++git commit -m "your message"
++```
++
++### PowerShell (agent / manual)
++
++```powershell
++# Read values from .git-author, then:
++$env:GIT_AUTHOR_NAME = "Your Name"
++$env:GIT_AUTHOR_EMAIL = "you@example.com"
++$env:GIT_COMMITTER_NAME = "Your Name"
++$env:GIT_COMMITTER_EMAIL = "you@example.com"
++git commit -m "your message"
++```
++
++### Fix author on recent commits
++
++```bash
++source ./helperscripts/git-author-env.sh
++git rebase HEAD~3 --exec "git commit --amend --no-edit --reset-author"
++```
++
++## Agent
++
++Cursor reads `.cursor/rules/git-commit-author.mdc` and:
++
++- loads `.git-author` before git operations
++- writes plain commit messages only — **no git trailers** (`Co-authored-by`, `Signed-off-by`, tool attribution, etc.)
+diff --git a/helperscripts/git-author-env.sh b/helperscripts/git-author-env.sh
+new file mode 100644
+index 0000000..85501d8
+--- /dev/null
++++ b/helperscripts/git-author-env.sh
+@@ -0,0 +1,27 @@
++#!/usr/bin/env bash
++# Loads GIT_AUTHOR_* and GIT_COMMITTER_* from .git-author into the current shell.
++# Usage: source ./scripts/git-author-env.sh
++
++set -euo pipefail
++
++ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
++AUTHOR_FILE="${ROOT}/.git-author"
++
++if [ ! -f "${AUTHOR_FILE}" ]; then
++    echo "Error: ${AUTHOR_FILE} not found." >&2
++    echo "Copy .git-author.example to .git-author and set your name and email." >&2
++    return 1 2>/dev/null || exit 1
++fi
++
++set -a
++# shellcheck disable=SC1090
++. "${AUTHOR_FILE}"
++set +a
++
++export GIT_COMMITTER_NAME="${GIT_COMMITTER_NAME:-${GIT_AUTHOR_NAME:-}}"
++export GIT_COMMITTER_EMAIL="${GIT_COMMITTER_EMAIL:-${GIT_AUTHOR_EMAIL:-}}"
++
++if [ -z "${GIT_AUTHOR_NAME:-}" ] || [ -z "${GIT_AUTHOR_EMAIL:-}" ]; then
++    echo "Error: GIT_AUTHOR_NAME and GIT_AUTHOR_EMAIL must be set in .git-author." >&2
++    return 1 2>/dev/null || exit 1
++fi

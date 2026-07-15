@@ -80,12 +80,12 @@ Falls manuell getaggt wird, gilt:
 
 ## Beispiele
 
-### Release-Tags (`vX.Y.Z`)
+### Sample Release-Tags (`vX.Y.Z`)
 
 - Gültig: `v0.1.0`, `v1.2.3`, `v10.0.7`
 - Ungültig: `v1`, `v1.0`, `v01.2.3`, `version1.2.3`
 
-### Moving Major Alias (`vN`)
+### Sample Moving Major Alias (`vN`)
 
 - Gültig: `v0`, `v1`, `v12`
 - Ungültig: `v01`, `v1.0`, `v1a`

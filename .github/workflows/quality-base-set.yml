@@ -52,7 +52,10 @@ jobs:
       skip-markdown: true
 
   release-validate-tag-immutable:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/') &&
+      contains(github.ref_name, '.')
     uses: ./.github/workflows/release-validate-tag-immutable.yml
     with:
       tag: ${{ github.ref_name }}
@@ -62,7 +65,10 @@ jobs:
 
   release-validate-tags:
     needs: release-validate-tag-immutable
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/') &&
+      contains(github.ref_name, '.')
     uses: ./.github/workflows/release-validate-tags.yml
     with:
       tag: ${{ github.ref_name }}
@@ -71,12 +77,18 @@ jobs:
 
   release-validate-branch:
     needs: release-validate-tags
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/') &&
+      contains(github.ref_name, '.')
     uses: ./.github/workflows/release-validate-branch.yml
 
   release-github:
     needs: release-validate-branch
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/') &&
+      contains(github.ref_name, '.')
     uses: ./.github/workflows/release-github.yml
     with:
       tag: ${{ github.ref_name }}

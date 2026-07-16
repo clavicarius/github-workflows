@@ -38,7 +38,7 @@ jobs:
 
       - name: Compute next version
         id: compute
-        uses: ./actions/release-simple-versioning
+        uses: ./actions/release-semver-versioning
 
       - name: Dry-run summary (PR)
         if: github.event_name == 'pull_request'
@@ -77,8 +77,16 @@ jobs:
           echo "Pushing tag"
           git push origin "${NEXT_TAG}"
 
+          # Derive the major alias tag (e.g. v1.2.3 -> v1) and move it to HEAD.
+          MAJOR_TAG="v${NEXT_TAG%%.*}"
+
+          echo "Moving major alias tag: ${MAJOR_TAG} -> ${NEXT_TAG}"
+          git tag --force "${MAJOR_TAG}"
+          git push origin --force "refs/tags/${MAJOR_TAG}"
+
           {
             echo "## Versioning result"
             echo ""
             echo "- created tag: \`${NEXT_TAG}\`"
+            echo "- moved major alias: \`${MAJOR_TAG}\`"
           } >> "$GITHUB_STEP_SUMMARY"

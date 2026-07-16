@@ -78,7 +78,9 @@ jobs:
           git push origin "${NEXT_TAG}"
 
           # Derive the major alias tag (e.g. v1.2.3 -> v1) and move it to HEAD.
-          MAJOR_TAG="v${NEXT_TAG%%.*}"
+          MAJOR_NUM="${NEXT_TAG#v}"     # strip leading 'v' -> "1.2.3"
+          MAJOR_NUM="${MAJOR_NUM%%.*}"  # strip ".minor.patch" -> "1"
+          MAJOR_TAG="v${MAJOR_NUM}"    # -> "v1"
 
           echo "Moving major alias tag: ${MAJOR_TAG} -> ${NEXT_TAG}"
           git tag --force "${MAJOR_TAG}"

@@ -3,6 +3,9 @@
 Dieses Repository enthält zentral verwaltete
 **wiederverwendbare GitHub Actions Workflows** und **Composite Actions** für mehrere Projekte.
 
+![logo](./assets/logo-claim.png)
+
+
 Ziel ist es, wiederkehrende CI/CD-Aufgaben nicht in jedem einzelnen Repository doppelt zu pflegen,
 sondern sie zentral bereitzustellen und über `workflow_call` einzubinden.
 

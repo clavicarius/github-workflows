@@ -212,18 +212,29 @@ Empfohlen:
 uses: clavicarius/ci-platform/.github/workflows/quality-link-check.yml@v1
 ```
 
-Versionen werden über Git Tags verwaltet:
+`@v1` ist ein **Floating Major Alias**: er zeigt stets auf das neueste kompatible
+Release innerhalb der Major-Linie `v1.x.x`. Consumer erhalten Bugfixes und neue
+Features (Minor/Patch) automatisch — ohne die Referenz im Workflow ändern zu müssen.
 
-```bash
-git tag v1
-git push origin v1
+Versionen folgen [Semantic Versioning](https://semver.org/):
+
 ```
+vMAJOR.MINOR.PATCH  →  z. B. v1.2.3
+```
+
+Der Release-Prozess ist vollständig automatisiert:
+
+- Push nach `main` → CI berechnet und erstellt den nächsten `vX.Y.Z`-Tag
+- CI aktualisiert automatisch den zugehörigen Major-Alias (`v1`, `v2`, …)
+
+Breaking Changes werden ausschließlich in neuen Major-Versionen eingeführt.
+Consumer mit `@v1` sind von Breaking Changes in `v2` oder später nicht betroffen.
 
 Vorteile:
 
 - Reproduzierbare Builds
-- Kontrollierte Updates
-- Keine unerwarteten Änderungen durch neue Commits
+- Kompatible Updates automatisch erhalten
+- Breaking Changes nur durch bewussten Wechsel auf `@v2`
 
 ---
 

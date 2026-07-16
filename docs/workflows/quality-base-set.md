@@ -58,6 +58,11 @@ Wird ein `v*`-Tag auf einem anderen Branch gesetzt oder ist das Format ungültig
 schlagen die Jobs `release-validate-tags` bzw. `release-validate-branch` fehl
 und das Release wird nicht erstellt.
 
+Die Release-Validierungs-Jobs (`release-validate-tag-immutable`, `release-validate-tags`,
+`release-validate-branch`, `release-github`) werden **nur für SemVer-Tags** ausgeführt,
+d.h. Tags, die einen Punkt enthalten (z.B. `v1.0.0`). Einfache Major-Alias-Tags
+(z.B. `v1`) werden von der Validierungskette übersprungen und lösen kein Release aus.
+
 ---
 
 ## Konfiguration im Base Set

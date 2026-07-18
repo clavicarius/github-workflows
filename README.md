@@ -310,7 +310,7 @@ Vor Erstellung eines neuen Workflows prüfen:
 Für repository-interne Pull Requests auf `main` und `develop` gilt für den
 Quell-Branch die Konvention `<prefix>/<name>` mit den Präfixen
 `feature`, `enhancement`, `bugfix`, `hotfix`, `release`, `chore` und
-`copilot` (für agentengenerierte Pull Requests).
+`copilot` (für von Agenten erzeugte Pull Requests).
 
 Ablauf:
 

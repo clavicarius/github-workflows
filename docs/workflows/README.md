@@ -32,6 +32,7 @@ Jeder Workflow wird separat dokumentiert und beschreibt:
 | [Security CodeQL](security-codeql.md) | Führt statische Sicherheitsanalysen durch |
 | [Security Dependency Review](security-dependency-review.md) | Prüft neue Dependencies in Pull Requests |
 | [Security Secret Scan](security-secret-scan.md) | Verhindert das versehentliche Committen von Secrets |
+| [Validate Branch Name](validate-branch-name.md) | Prüft Source-Branch-Namen für Pull Requests auf `main` und `develop`, inkl. `copilot/*` für Agent-PRs |
 | [Maintenance Link Check](maintenance-link-check.md) | Geplante Linkprüfung (repository-intern, kein `workflow_call`) |
 
 ---

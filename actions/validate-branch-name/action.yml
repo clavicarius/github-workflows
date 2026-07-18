@@ -1,0 +1,26 @@
+name: Validate Branch Name
+description: Validates pull request source branch names against a regex policy
+author: clavicarius
+
+inputs:
+  branch-name:
+    description: Branch name to validate
+    required: true
+
+  branch-regex:
+    description: Regular expression used to validate the branch name
+    required: false
+    default: '^(feature|enhancement|bugfix|hotfix|release|chore|copilot)/[a-z0-9._-]+$'
+
+runs:
+  using: composite
+
+  steps:
+    - name: Validate branch name
+      shell: bash
+      env:
+        BRANCH_NAME: ${{ inputs.branch-name }}
+        BRANCH_REGEX: ${{ inputs.branch-regex }}
+      run: |
+        set -euo pipefail
+        bash "${GITHUB_WORKSPACE}/scripts/validate-branch-name.sh"

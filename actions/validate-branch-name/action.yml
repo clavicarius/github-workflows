@@ -10,7 +10,7 @@ inputs:
   branch-regex:
     description: Regular expression used to validate the branch name
     required: false
-    default: '^(feature|enhancement|bugfix|hotfix|release|chore)/[a-z0-9._-]+$'
+    default: '^(feature|enhancement|bugfix|hotfix|release|chore|copilot)/[a-z0-9._-]+$'
 
 runs:
   using: composite

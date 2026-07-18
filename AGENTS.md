@@ -156,6 +156,36 @@ permissions:
 
 ---
 
+# Pull Request Branch Naming
+
+For repository-internal pull requests targeting `main` or `develop`,
+source branches MUST use:
+
+```text
+<prefix>/<name>
+```
+
+Allowed prefixes:
+
+- `feature`
+- `enhancement`
+- `bugfix`
+- `hotfix`
+- `release`
+- `chore`
+- `copilot` for agent-generated pull requests
+
+The `<name>` part MUST match:
+
+```regex
+[a-z0-9._-]+
+```
+
+AI agents MUST use this convention when working with repository-internal
+pull requests.
+
+---
+
 # Versioning Rules
 
 References to this repository SHOULD use release tags.

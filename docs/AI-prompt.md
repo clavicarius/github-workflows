@@ -271,6 +271,31 @@ Wenn ein Workflow eine Composite Action nutzt, sollen Namen übereinstimmen.
 
 ---
 
+## Pull-Request-Branches
+
+Repository-interne Pull Requests auf `main` und `develop` müssen
+Quell-Branches im Format `<prefix>/<name>` verwenden.
+
+Erlaubte Präfixe:
+
+- `feature/`
+- `enhancement/`
+- `bugfix/`
+- `hotfix/`
+- `release/`
+- `chore/`
+- `copilot/` für agentengenerierte Pull Requests
+
+Regex:
+
+```regex
+^(feature|enhancement|bugfix|hotfix|release|chore|copilot)\/[a-z0-9._-]+$
+```
+
+AI-Agenten sollen für eigene PR-Branches diese Konvention einhalten.
+
+---
+
 ## Script-Dateien
 
 ```

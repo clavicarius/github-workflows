@@ -47,11 +47,12 @@ Erlaubte Präfixe:
 - `hotfix/`
 - `release/`
 - `chore/`
+- `copilot/` (für agentengenerierte Pull Requests)
 
 Regex:
 
 ```regex
-^(feature|enhancement|bugfix|hotfix|release|chore)\/[a-z0-9._-]+$
+^(feature|enhancement|bugfix|hotfix|release|chore|copilot)\/[a-z0-9._-]+$
 ```
 
 ---

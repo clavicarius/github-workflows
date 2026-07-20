@@ -49,18 +49,15 @@ runs:
           --jq '.[0].number // empty')
 
         if [ -n "$ISSUE_NUMBER" ]; then
-          echo "Updating issue #$ISSUE_NUMBER"
-
-          gh issue edit "$ISSUE_NUMBER" \
-            --body-file "$REPORT"
-
+           echo "Updating issue #$ISSUE_NUMBER"
+           gh issue edit "$ISSUE_NUMBER" \
+             --body-file "$REPORT" || echo "⚠️ Could not update issue (issues may be disabled)"
         else
           echo "Creating new issue"
-
           gh issue create \
             --title "$TITLE" \
             --body-file "$REPORT" \
-            --label "$LABEL"
+            --label "$LABEL" || echo "⚠️ Could not create issue (issues may be disabled)"
         fi
 
     - name: Close existing issue
@@ -83,7 +80,8 @@ runs:
 
         if [ -n "$ISSUE_NUMBER" ]; then
           echo "Closing issue #$ISSUE_NUMBER"
-
           gh issue close "$ISSUE_NUMBER" \
-            --comment "✅ All broken links have been fixed."
+            --comment "✅ All previously reported broken links have been resolved." || echo "⚠️ Could not close issue (issues may be disabled)"
+        else
+          echo "No open link checker issue found."
         fi
